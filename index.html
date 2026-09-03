@@ -2,1274 +2,701 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"
->
-
-<meta name="theme-color" content="#061a3a">
-
-<title>Temple Tour | Srirangam</title>
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#061c4f">
+<title>Temple Tour Guide</title>
 
 <style>
-
 /* =========================================================
-   ROOT
-========================================================= */
+   TEMPLE TOUR APPLICATION
+   SINGLE FILE: HTML + CSS + JAVASCRIPT
+   ========================================================= */
 
-:root {
-    --blue: #0755b8;
-    --deep-blue: #04152d;
-    --gold: #d8b15a;
-    --gold-light: #f5dda2;
-    --white: #ffffff;
-    --black: #000000;
-    --glass: rgba(255,255,255,0.10);
-    --glass-border: rgba(255,255,255,0.22);
+:root{
+    --blue:#071f57;
+    --blue2:#103d8f;
+    --gold:#d7a43a;
+    --cream:#fff8e7;
+    --white:#ffffff;
+    --dark:rgba(0,0,0,.72);
+    --safe-top:env(safe-area-inset-top,0px);
+    --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-user-select:none;
+    user-select:none;
 }
 
-html,
-body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-    background: var(--deep-blue);
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    overscroll-behavior:none;
+    background:var(--blue);
+    font-family:"Noto Sans Tamil","Noto Sans Malayalam",
+                "Noto Sans Telugu","Noto Sans Kannada",
+                Arial,sans-serif;
 }
 
-body {
-    font-family:
-        Arial,
-        "Noto Sans Tamil",
-        "Noto Sans Telugu",
-        "Noto Sans Malayalam",
-        "Noto Sans Kannada",
-        "Noto Sans Devanagari",
-        sans-serif;
-
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
+button,input{
+    font:inherit;
 }
 
-
-/* =========================================================
-   APPLICATION
-========================================================= */
-
-#app {
-    position: fixed;
-    inset: 0;
-
-    width: 100vw;
-    height: 100dvh;
-
-    overflow: hidden;
-    background: var(--deep-blue);
+button{
+    border:0;
+    cursor:pointer;
 }
 
-.screen {
-    position: absolute;
-    inset: 0;
-
-    display: none;
-
-    width: 100%;
-    height: 100%;
-
-    overflow: hidden;
+/* APP */
+#app{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#061c4f;
 }
 
-.screen.active {
-    display: flex;
+/* LOADER */
+#loader{
+    position:absolute;
+    inset:0;
+    z-index:9999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#06296f;
+    transition:opacity .7s ease,visibility .7s ease;
 }
 
-.hidden {
-    display: none !important;
+#loader.hide{
+    opacity:0;
+    visibility:hidden;
 }
 
-
-/* =========================================================
-   LOADER
-========================================================= */
-
-#loaderScreen {
-    justify-content: center;
-    align-items: center;
-    background: var(--blue);
+.loader-ring{
+    width:72px;
+    height:72px;
+    border:5px solid rgba(255,255,255,.22);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:spin .9s linear infinite;
 }
 
-.loader {
-    width: 68px;
-    height: 68px;
-
-    border-radius: 50%;
-
-    border: 5px solid rgba(255,255,255,.25);
-    border-top-color: white;
-
-    animation: rotate .8s linear infinite;
+@keyframes spin{
+    to{transform:rotate(360deg)}
 }
 
-@keyframes rotate {
-    to {
-        transform: rotate(360deg);
-    }
+/* GENERAL SCREEN */
+.screen{
+    position:absolute;
+    inset:0;
+    display:none;
+    width:100%;
+    height:100%;
+    overflow:hidden;
 }
 
-
-/* =========================================================
-   GENERIC MEDIA BACKGROUND
-========================================================= */
-
-.media-background {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    overflow: hidden;
+.screen.active{
+    display:block;
 }
 
-.media-background video,
-.media-background img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
+/* VIDEO */
+.video-background{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    background:#000;
 }
 
-.dark-overlay {
-    position: absolute;
-    inset: 0;
+.video-background video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
 
+.video-background::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        180deg,
+        rgba(0,0,0,.22),
+        rgba(0,0,0,.42)
+    );
+}
+
+/* START */
+.start-content{
+    position:relative;
+    z-index:2;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    padding:calc(30px + var(--safe-top))
+             25px
+             calc(38px + var(--safe-bottom));
+    text-align:center;
+    color:#fff;
+}
+
+.temple-main-title{
+    margin-bottom:auto;
+    padding-top:45px;
+    font-size:clamp(24px,6vw,42px);
+    line-height:1.4;
+    font-weight:700;
+    text-shadow:0 3px 15px #000;
+}
+
+.temple-main-subtitle{
+    font-size:clamp(14px,3.7vw,20px);
+    line-height:1.6;
+    max-width:700px;
+    margin-bottom:30px;
+    text-shadow:0 2px 10px #000;
+}
+
+.primary-btn{
+    min-width:240px;
+    padding:17px 30px;
+    border-radius:50px;
+    color:#06225f;
+    background:#fff;
+    font-size:17px;
+    font-weight:800;
+    box-shadow:0 8px 35px rgba(0,0,0,.35);
+}
+
+/* LANGUAGE */
+.language-screen{
+    overflow-y:auto;
+    background:linear-gradient(145deg,#06194a,#10469a);
+    padding:calc(35px + var(--safe-top)) 22px calc(40px + var(--safe-bottom));
+}
+
+.language-title{
+    text-align:center;
+    color:#fff;
+    font-size:clamp(26px,7vw,42px);
+    margin:10px 0 35px;
+}
+
+.language-grid{
+    max-width:700px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+}
+
+.language-btn{
+    min-height:78px;
+    padding:12px;
+    color:#fff;
+    background:rgba(255,255,255,.11);
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:18px;
+    font-size:17px;
+    font-weight:700;
+}
+
+.language-btn:active{
+    transform:scale(.97);
+}
+
+/* INTERMEDIATE VIDEO */
+.intro-video-screen{
+    background:#000;
+}
+
+#languageVideo{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#000;
+}
+
+.skip-video{
+    position:absolute;
+    z-index:5;
+    top:calc(20px + var(--safe-top));
+    right:20px;
+    padding:11px 17px;
+    border-radius:25px;
+    color:#fff;
+    background:rgba(0,0,0,.55);
+}
+
+/* TOP CONTROLS */
+.top-controls{
+    position:absolute;
+    z-index:100;
+    top:calc(14px + var(--safe-top));
+    left:15px;
+    right:15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    pointer-events:none;
+}
+
+.top-controls button{
+    pointer-events:auto;
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    background:rgba(0,0,0,.62);
+    border:1px solid rgba(255,255,255,.15);
+    font-size:21px;
+}
+
+.right-controls{
+    display:flex;
+    gap:10px;
+}
+
+/* HOME / NUMBER SCREEN */
+.home-screen{
     background:
-        linear-gradient(
-            to bottom,
-            rgba(0,0,0,.20),
-            rgba(0,0,0,.42),
-            rgba(0,0,0,.88)
-        );
+        linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.6)),
+        var(--home-bg) center/cover no-repeat,
+        #10265a;
 }
 
-
-/* =========================================================
-   WELCOME SCREEN
-========================================================= */
-
-#welcomeScreen {
-    justify-content: center;
-    align-items: flex-end;
-
-    color: white;
+.home-content{
+    position:relative;
+    z-index:2;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:90px 25px calc(120px + var(--safe-bottom));
+    text-align:center;
+    color:#fff;
 }
 
-.welcome-content {
-    position: relative;
-    z-index: 10;
+.home-title{
+    font-size:clamp(26px,7vw,46px);
+    margin:0 0 12px;
+    text-shadow:0 3px 15px #000;
+}
 
-    width: min(100%, 850px);
+.home-description{
+    max-width:700px;
+    font-size:clamp(15px,4vw,20px);
+    line-height:1.7;
+    text-shadow:0 2px 10px #000;
+}
 
-    text-align: center;
+.number-entry{
+    width:min(100%,500px);
+    margin-top:25px;
+    padding:10px;
+    display:flex;
+    gap:8px;
+    background:#fff;
+    border-radius:22px;
+    box-shadow:0 15px 50px rgba(0,0,0,.35);
+}
 
+#locationNumber{
+    width:100%;
+    min-width:0;
+    border:0;
+    outline:none;
+    padding:15px;
+    color:#061f57;
+    font-size:23px;
+    text-align:center;
+    font-weight:800;
+    background:transparent;
+    -webkit-user-select:text;
+    user-select:text;
+}
+
+.enter-number{
+    min-width:88px;
+    border-radius:15px;
+    color:#fff;
+    background:#092b72;
+    font-weight:800;
+}
+
+/* TITLE SCREEN */
+.content-screen{
+    background:#000;
+}
+
+.content-image{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.content-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        180deg,
+        rgba(0,0,0,.20),
+        rgba(0,0,0,.78)
+    );
+}
+
+.content-inner{
+    position:relative;
+    z-index:5;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
     padding:
-        30px
+        calc(95px + var(--safe-top))
         24px
-        calc(125px + env(safe-area-inset-bottom));
+        calc(115px + var(--safe-bottom));
+    color:#fff;
 }
 
-.temple-tamil {
-    font-size: clamp(24px, 7vw, 50px);
-    line-height: 1.4;
-    font-weight: 700;
-
-    text-shadow:
-        0 4px 18px rgba(0,0,0,.85);
+.content-title{
+    margin:0 0 18px;
+    font-size:clamp(30px,8vw,56px);
+    line-height:1.25;
+    text-shadow:0 3px 16px #000;
 }
 
-.temple-english {
-    margin-top: 15px;
-
-    font-size: clamp(17px, 4.8vw, 29px);
-    line-height: 1.45;
-
-    color: var(--gold-light);
-
-    text-shadow:
-        0 3px 12px rgba(0,0,0,.85);
+.content-text{
+    max-height:52vh;
+    overflow-y:auto;
+    padding:20px;
+    border-radius:20px;
+    background:rgba(0,0,0,.48);
+    backdrop-filter:blur(8px);
+    font-size:clamp(18px,4.8vw,25px);
+    line-height:1.75;
+    text-align:justify;
+    white-space:pre-wrap;
 }
 
-.temple-code {
-    display: inline-flex;
-
-    margin: 18px 0 28px;
-
-    padding: 8px 18px;
-
-    border: 1px solid var(--gold);
-
-    border-radius: 50px;
-
-    color: var(--gold-light);
-
-    letter-spacing: 2px;
+.content-text.hidden{
+    display:none;
 }
 
-.primary-button {
-    min-height: 58px;
-
-    padding: 15px 35px;
-
-    border: 1px solid var(--gold);
-
-    border-radius: 14px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #b8882f,
-            #f0d17f
-        );
-
-    color: #1d1305;
-
-    font-size: 16px;
-    font-weight: 800;
-
-    letter-spacing: 1px;
-
-    cursor: pointer;
+/* FOOTER */
+.powered-footer{
+    position:absolute;
+    z-index:200;
+    left:0;
+    right:0;
+    bottom:calc(10px + var(--safe-bottom));
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    pointer-events:none;
+    text-align:center;
+    color:#fff;
+    text-shadow:0 2px 8px #000;
 }
 
-
-/* =========================================================
-   PROPER FOOTER
-========================================================= */
-
-.app-footer {
-    position: absolute;
-
-    left: 0;
-    right: 0;
-
-    bottom:
-        calc(
-            14px +
-            env(safe-area-inset-bottom)
-        );
-
-    z-index: 50;
-
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
-    text-align: center;
-
-    pointer-events: none;
-
-    padding: 0 20px;
+.powered-logo{
+    width:36px;
+    height:36px;
+    object-fit:contain;
 }
 
-.powered-by-text {
-    color: rgba(255,255,255,.88);
-
-    font-size: clamp(10px, 3vw, 13px);
-
-    line-height: 1.45;
-
-    letter-spacing: .2px;
-
-    text-align: center;
+.powered-text{
+    width:100%;
+    padding:0 15px;
+    font-size:12px;
+    line-height:1.35;
+    font-weight:700;
+    letter-spacing:.2px;
 }
 
-.powered-by-text strong {
-    display: block;
-
-    color: white;
-
-    font-size: clamp(12px, 3.4vw, 15px);
-
-    font-weight: 700;
-
-    margin-top: 1px;
+/* MENU */
+.menu-overlay,
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:none;
+    background:rgba(0,0,0,.58);
+    backdrop-filter:blur(6px);
 }
 
-.footer-logo {
-    display: block;
-
-    width: 76px;
-    height: 32px;
-
-    margin: 6px auto 0;
-
-    object-fit: contain;
+.menu-overlay.open,
+.modal-overlay.open{
+    display:block;
 }
 
-
-/* =========================================================
-   LANGUAGE SCREEN
-========================================================= */
-
-#languageScreen {
-    justify-content: center;
-    align-items: center;
-
-    background:
-        radial-gradient(
-            circle at top,
-            #165da7,
-            #06152e 65%
-        );
-
-    color: white;
-}
-
-.language-wrap {
-    width: min(92%, 900px);
-
-    max-height: 92dvh;
-
-    overflow-y: auto;
-
-    text-align: center;
-
+.side-menu{
+    position:absolute;
+    top:0;
+    right:-360px;
+    width:min(88vw,360px);
+    height:100%;
     padding:
-        30px 0
-        50px;
-}
-
-.language-wrap h1 {
-    font-size:
-        clamp(29px, 8vw, 52px);
-
-    color: var(--gold-light);
-}
-
-.language-wrap p {
-    margin: 14px 0 30px;
-
-    opacity: .85;
-}
-
-.language-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 14px;
-}
-
-.language-button {
-    min-height: 88px;
-
-    padding: 10px;
-
-    border:
-        1px solid
-        var(--glass-border);
-
-    border-radius: 16px;
-
-    background:
-        rgba(255,255,255,.08);
-
-    color: white;
-
-    cursor: pointer;
-
-    backdrop-filter:
-        blur(10px);
-}
-
-.language-native {
-    display: block;
-
-    font-size:
-        clamp(16px, 5vw, 22px);
-
-    font-weight: 700;
-}
-
-.language-english {
-    display: block;
-
-    margin-top: 8px;
-
-    font-size: 12px;
-
-    opacity: .7;
-}
-
-
-/* =========================================================
-   INTRO VIDEO SCREEN
-========================================================= */
-
-#introScreen {
-    background: black;
-}
-
-#introVideo {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-
-    background: black;
-}
-
-
-/* =========================================================
-   TOP ICON BUTTONS
-========================================================= */
-
-.icon-button {
-    position: absolute;
-
-    z-index: 200;
-
-    width: 52px;
-    height: 52px;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    border:
-        1px solid
-        rgba(255,255,255,.30);
-
-    border-radius: 50%;
-
-    background:
-        rgba(0,0,0,.48);
-
-    color: white;
-
-    cursor: pointer;
-
-    backdrop-filter:
-        blur(10px);
-}
-
-.top-left {
-    left:
-        max(
-            16px,
-            env(safe-area-inset-left)
-        );
-
-    top:
-        max(
-            16px,
-            env(safe-area-inset-top)
-        );
-}
-
-.top-right {
-    right:
-        max(
-            16px,
-            env(safe-area-inset-right)
-        );
-
-    top:
-        max(
-            16px,
-            env(safe-area-inset-top)
-        );
-}
-
-.icon-button svg {
-    width: 24px;
-    height: 24px;
-
-    fill: currentColor;
-}
-
-
-/* =========================================================
-   TITLE SCREEN
-========================================================= */
-
-#titleScreen {
-    justify-content: center;
-    align-items: center;
-
-    color: white;
-}
-
-#titleBackground {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-}
-
-.title-overlay {
-    position: absolute;
-    inset: 0;
-
-    background:
-        rgba(0,0,0,.58);
-}
-
-.title-content {
-    position: relative;
-    z-index: 20;
-
-    width: min(90%, 900px);
-
-    padding: 20px;
-
-    text-align: center;
-}
-
-.title-content h1 {
-    color: white;
-
-    font-size:
-        clamp(34px, 10vw, 70px);
-
-    line-height: 1.28;
-
-    text-shadow:
-        0 5px 25px black;
-}
-
-
-/* =========================================================
-   CONTENT SCREEN
-========================================================= */
-
-#contentScreen {
-    color: white;
-}
-
-#contentBackground {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    background-size: cover;
-    background-position: center;
-}
-
-.content-overlay {
-    position: absolute;
-    inset: 0;
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,0,0,.80),
-            rgba(0,0,0,.35)
-        ),
-        linear-gradient(
-            0deg,
-            rgba(0,0,0,.88),
-            transparent 70%
-        );
-}
-
-.content-scroll {
-    position: relative;
-    z-index: 20;
-
-    width: min(100%, 950px);
-    height: 100%;
-
-    margin: auto;
-
-    overflow-y: auto;
-
-    padding:
-        calc(
-            88px +
-            env(safe-area-inset-top)
-        )
-        25px
-        125px;
-}
-
-.content-scroll h1 {
-    margin-bottom: 24px;
-
-    color: var(--gold-light);
-
-    font-size:
-        clamp(28px, 8vw, 58px);
-
-    line-height: 1.3;
-}
-
-#contentDescription {
-    font-size:
-        clamp(19px, 5vw, 30px);
-
-    line-height: 1.75;
-
-    text-align: justify;
-
-    white-space: pre-wrap;
-
-    text-shadow:
-        0 2px 10px black;
-}
-
-#contentDescription.no-caption {
-    display: none;
-}
-
-
-/* =========================================================
-   BOTTOM CONTROLS
-========================================================= */
-
-.bottom-controls {
-    position: absolute;
-
-    z-index: 200;
-
-    left: 50%;
-
-    bottom:
-        max(
-            22px,
-            env(safe-area-inset-bottom)
-        );
-
-    transform:
-        translateX(-50%);
-
-    display: flex;
-
-    gap: 12px;
-}
-
-.control-button {
-    min-height: 46px;
-
-    padding: 0 17px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.35);
-
-    border-radius: 50px;
-
-    background:
-        rgba(0,0,0,.65);
-
-    color: white;
-
-    font-weight: 700;
-
-    cursor: pointer;
-
-    backdrop-filter:
-        blur(12px);
-}
-
-.control-button.active {
-    background: var(--gold);
-
-    color: #1e1304;
-
-    border-color:
-        var(--gold);
-}
-
-
-/* =========================================================
-   NUMBER SCREEN
-========================================================= */
-
-#numberScreen {
-    justify-content: center;
-    align-items: center;
-
-    background:
-        radial-gradient(
-            circle at top,
-            #195c9d,
-            #061326 68%
-        );
-
-    color: white;
-}
-
-.number-wrap {
-    width: min(92%, 510px);
-
-    padding-bottom: 80px;
-
-    text-align: center;
-}
-
-.number-wrap h1 {
-    color: var(--gold-light);
-
-    font-size:
-        clamp(29px, 9vw, 50px);
-}
-
-.number-wrap p {
-    margin: 15px 0 25px;
-
-    line-height: 1.6;
-
-    opacity: .85;
-}
-
-#locationInput {
-    width: 100%;
-    height: 75px;
-
-    border:
-        1px solid
-        var(--gold);
-
-    border-radius: 16px;
-
-    background:
-        rgba(255,255,255,.09);
-
-    color: white;
-
-    text-align: center;
-
-    font-size: 33px;
-
-    letter-spacing: 8px;
-
-    outline: none;
-}
-
-.keypad {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 11px;
-
-    margin-top: 20px;
-}
-
-.key {
-    min-height: 62px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.15);
-
-    border-radius: 13px;
-
-    background:
-        rgba(255,255,255,.08);
-
-    color: white;
-
-    font-size: 23px;
-
-    cursor: pointer;
-}
-
-.key.enter {
-    grid-column: span 2;
-
-    background:
-        var(--gold);
-
-    color: #1e1304;
-
-    font-size: 15px;
-
-    font-weight: 800;
-}
-
-
-/* =========================================================
-   MENU
-========================================================= */
-
-#menuOverlay {
-    position: fixed;
-    inset: 0;
-
-    z-index: 1000;
-
-    display: none;
-
-    background:
-        rgba(0,0,0,.76);
-
-    backdrop-filter:
-        blur(16px);
-}
-
-#menuOverlay.open {
-    display: block;
-}
-
-.menu-panel {
-    position: relative;
-
-    width: min(88%, 440px);
-    height: 100%;
-
-    padding:
-        calc(
-            88px +
-            env(safe-area-inset-top)
-        )
+        calc(28px + var(--safe-top))
         20px
-        40px;
-
-    overflow-y: auto;
-
-    background:
-        linear-gradient(
-            180deg,
-            #0d3d73,
-            #04162f
-        );
-
-    color: white;
+        calc(30px + var(--safe-bottom));
+    overflow-y:auto;
+    background:linear-gradient(180deg,#06225f,#0d3f8d);
+    transition:right .35s ease;
 }
 
-.menu-title {
-    margin-bottom: 26px;
-
-    color: var(--gold-light);
-
-    font-size: 30px;
+.menu-overlay.open .side-menu{
+    right:0;
 }
 
-.menu-item {
-    width: 100%;
-
-    min-height: 62px;
-
-    margin-bottom: 12px;
-
-    padding: 16px 18px;
-
-    text-align: left;
-
-    border:
-        1px solid
-        rgba(255,255,255,.14);
-
-    border-radius: 14px;
-
-    background:
-        rgba(255,255,255,.06);
-
-    color: white;
-
-    font-size: 16px;
-
-    cursor: pointer;
+.menu-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:#fff;
+    margin-bottom:30px;
 }
 
-
-/* =========================================================
-   LIST SCREENS
-========================================================= */
-
-.list-screen {
-    background:
-        linear-gradient(
-            180deg,
-            #0d3d73,
-            #04162f
-        );
-
-    color: white;
-
-    overflow-y: auto;
+.menu-header h2{
+    margin:0;
 }
 
-.list-container {
-    width: min(94%, 850px);
-
-    margin: auto;
-
-    padding:
-        95px 0
-        40px;
+.close-menu{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    color:#fff;
+    background:rgba(255,255,255,.14);
+    font-size:22px;
 }
 
-.list-container h1 {
-    margin-bottom: 24px;
-
-    color: var(--gold-light);
-
-    font-size:
-        clamp(30px, 8vw, 50px);
+.menu-item{
+    width:100%;
+    margin:0 0 12px;
+    padding:17px;
+    text-align:left;
+    color:#fff;
+    background:rgba(255,255,255,.09);
+    border-radius:15px;
+    font-weight:700;
 }
 
-.list-card {
-    display: grid;
-
-    grid-template-columns:
-        105px
-        1fr
-        30px;
-
-    align-items: center;
-
-    gap: 14px;
-
-    margin-bottom: 14px;
-
-    padding: 10px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.14);
-
-    border-radius: 17px;
-
-    background:
-        rgba(255,255,255,.07);
-
-    cursor: pointer;
+/* MUSIC */
+.music-modal-content,
+.password-card{
+    width:min(90vw,520px);
+    margin:12vh auto;
+    padding:25px;
+    border-radius:24px;
+    background:#fff;
+    box-shadow:0 20px 80px rgba(0,0,0,.4);
 }
 
-.list-card img {
-    width: 105px;
-    height: 84px;
-
-    object-fit: cover;
-
-    border-radius: 12px;
+.music-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
 }
 
-.list-card-title {
-    font-size:
-        clamp(17px, 5vw, 25px);
+.music-item{
+    width:100%;
+    padding:17px;
+    text-align:left;
+    color:#08255f;
+    background:#eef3ff;
+    border-radius:14px;
 }
 
-.list-arrow {
-    color: var(--gold-light);
-
-    font-size: 30px;
+.music-lyrics{
+    margin-top:20px;
+    padding:18px;
+    max-height:250px;
+    overflow:auto;
+    line-height:1.7;
+    text-align:justify;
+    background:#f7f7f7;
+    border-radius:15px;
 }
 
-
-/* =========================================================
-   MUSIC MODAL
-========================================================= */
-
-#musicModal {
-    position: fixed;
-    inset: 0;
-
-    z-index: 2000;
-
-    display: none;
-
-    justify-content: center;
-    align-items: center;
-
-    padding: 20px;
-
-    background:
-        rgba(0,0,0,.82);
-
-    backdrop-filter:
-        blur(14px);
+.stop-music{
+    width:100%;
+    margin-top:14px;
+    padding:15px;
+    border-radius:14px;
+    color:#fff;
+    background:#a01818;
 }
 
-#musicModal.open {
-    display: flex;
+/* FESTIVALS */
+.festival-list{
+    max-height:65vh;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
 }
 
-.music-box {
-    position: relative;
-
-    width: min(100%, 600px);
-
-    max-height: 88dvh;
-
-    overflow-y: auto;
-
-    padding: 25px;
-
-    border:
-        1px solid
-        rgba(216,177,90,.55);
-
-    border-radius: 22px;
-
-    background:
-        linear-gradient(
-            150deg,
-            #11447e,
-            #06162b
-        );
-
-    color: white;
+.festival-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px;
+    border-radius:18px;
+    background:#f1f4fa;
 }
 
-.music-box h2 {
-    margin-bottom: 22px;
-
-    color: var(--gold-light);
+.festival-item img{
+    width:78px;
+    height:78px;
+    border-radius:12px;
+    object-fit:cover;
 }
 
-.music-item {
-    margin-bottom: 10px;
-
-    padding: 16px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.12);
-
-    border-radius: 12px;
-
-    background:
-        rgba(255,255,255,.07);
-
-    cursor: pointer;
+.festival-info{
+    flex:1;
 }
 
-.music-item.playing {
-    border-color:
-        var(--gold);
-
-    background:
-        rgba(216,177,90,.15);
+.festival-name{
+    font-weight:800;
+    color:#08265f;
 }
 
-#lyrics {
-    margin-top: 22px;
-
-    white-space: pre-wrap;
-
-    font-size: 18px;
-
-    line-height: 1.8;
+.arrow-btn{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    color:#fff;
+    background:#082b71;
+    font-size:20px;
 }
 
-
-/* =========================================================
-   EXIT DIALOG
-========================================================= */
-
-#exitDialog {
-    position: fixed;
-    inset: 0;
-
-    z-index: 3000;
-
-    display: none;
-
-    justify-content: center;
-    align-items: center;
-
-    padding: 20px;
-
-    background:
-        rgba(0,0,0,.84);
+/* HEADPHONE BLOCK */
+#headphoneRequired{
+    position:fixed;
+    inset:0;
+    z-index:9000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+    background:rgba(2,10,30,.96);
+    color:#fff;
 }
 
-#exitDialog.open {
-    display: flex;
+#headphoneRequired.show{
+    display:flex;
 }
 
-.exit-box {
-    width: min(100%, 420px);
-
-    padding: 28px;
-
-    border:
-        1px solid
-        var(--gold);
-
-    border-radius: 22px;
-
-    background:
-        #09284c;
-
-    color: white;
-
-    text-align: center;
+.headphone-card{
+    width:min(100%,440px);
+    padding:35px 25px;
+    text-align:center;
+    border-radius:28px;
+    background:#0c2e72;
 }
 
-.exit-box h2 {
-    color: var(--gold-light);
-
-    margin-bottom: 12px;
+.headphone-card h2{
+    margin-top:0;
 }
 
-#exitPassword {
-    width: 100%;
-    height: 58px;
-
-    margin: 20px 0;
-
-    border:
-        1px solid
-        var(--gold);
-
-    border-radius: 12px;
-
-    background:
-        rgba(255,255,255,.08);
-
-    color: white;
-
-    text-align: center;
-
-    font-size: 22px;
-
-    outline: none;
+.headphone-symbol{
+    font-size:65px;
 }
 
-.dialog-buttons {
-    display: flex;
-
-    gap: 12px;
+.headphone-card button{
+    width:100%;
+    margin-top:15px;
+    padding:16px;
+    border-radius:14px;
+    color:#08255f;
+    background:#fff;
+    font-weight:800;
 }
 
-.dialog-buttons button {
-    flex: 1;
+/* PASSWORD */
+.password-card{
+    text-align:center;
 }
 
-
-/* =========================================================
-   EXIT SCREEN
-========================================================= */
-
-#exitScreen {
-    justify-content: center;
-    align-items: center;
-
-    background:
-        var(--deep-blue);
-
-    color: white;
-
-    text-align: center;
+.password-card input{
+    width:100%;
+    margin:15px 0;
+    padding:17px;
+    border:2px solid #d9dfeb;
+    border-radius:14px;
+    text-align:center;
+    letter-spacing:3px;
+    font-size:22px;
+    outline:none;
+    -webkit-user-select:text;
+    user-select:text;
 }
 
-.exit-screen-content {
-    padding: 30px;
+.password-actions{
+    display:flex;
+    gap:10px;
 }
 
-.exit-screen-content h1 {
-    color: var(--gold-light);
-
-    margin-bottom: 15px;
+.password-actions button{
+    flex:1;
+    padding:14px;
+    border-radius:12px;
+    font-weight:800;
 }
 
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-#toast {
-    position: fixed;
-
-    z-index: 5000;
-
-    left: 50%;
-
-    bottom: 90px;
-
-    transform:
-        translateX(-50%)
-        translateY(20px);
-
-    max-width: 85%;
-
-    padding: 13px 22px;
-
-    border-radius: 50px;
-
-    background:
-        rgba(0,0,0,.86);
-
-    color: white;
-
-    text-align: center;
-
-    opacity: 0;
-
-    transition: .25s;
-
-    pointer-events: none;
+.cancel-btn{
+    background:#eee;
 }
 
-#toast.show {
-    opacity: 1;
-
-    transform:
-        translateX(-50%)
-        translateY(0);
+.confirm-exit{
+    color:#fff;
+    background:#082b71;
 }
 
+/* ERROR */
+#errorBox{
+    position:fixed;
+    z-index:10000;
+    left:20px;
+    right:20px;
+    bottom:calc(20px + var(--safe-bottom));
+    display:none;
+    padding:15px;
+    color:#fff;
+    background:#a21717;
+    border-radius:14px;
+}
 
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 430px) {
-
-    .welcome-content {
-        padding-bottom:
-            calc(
-                110px +
-                env(safe-area-inset-bottom)
-            );
+/* SMALL SCREEN */
+@media(max-width:390px){
+    .language-grid{
+        gap:10px;
     }
 
-    .language-button {
-        min-height: 78px;
+    .language-btn{
+        min-height:65px;
+        font-size:15px;
     }
 
-    .list-card {
-        grid-template-columns:
-            90px
-            1fr
-            25px;
-    }
-
-    .list-card img {
-        width: 90px;
-        height: 74px;
+    .powered-text{
+        font-size:11px;
     }
 }
-
 </style>
 </head>
 
@@ -1277,3123 +704,1656 @@ body {
 
 <div id="app">
 
-
-<!-- =========================================================
-     LOADING
-========================================================= -->
-
-<section
-    id="loaderScreen"
-    class="screen active"
->
-    <div class="loader"></div>
-</section>
+    <!-- ================= LOADING ================= -->
+    <section id="loader">
+        <div class="loader-ring"></div>
+    </section>
 
 
-<!-- =========================================================
-     WELCOME
-========================================================= -->
+    <!-- ================= START ================= -->
+    <section id="startScreen" class="screen">
+        <div class="video-background">
+            <video id="startVideo"
+                   playsinline
+                   muted
+                   loop
+                   autoplay>
+            </video>
+        </div>
 
-<section
-    id="welcomeScreen"
-    class="screen"
->
+        <div class="start-content">
+            <div class="temple-main-title" id="startTempleName"></div>
 
-    <div class="media-background">
+            <div class="temple-main-subtitle" id="startTempleAddress"></div>
 
-        <video
-            id="2.mp4"
-            autoplay
-            muted
-            loop
-            playsinline
-        ></video>
+            <button class="primary-btn" onclick="showLanguages()">
+                Start Exploring
+            </button>
+        </div>
 
-        <div class="dark-overlay"></div>
+        <div class="powered-footer">
+            <img id="footerLogo" class="powered-logo" alt="SRM Logo">
+            <div class="powered-text">
+                Powered By SRM Group of Institutions Tiruchirappalli
+            </div>
+        </div>
+    </section>
 
-    </div>
 
-    <div class="welcome-content">
+    <!-- ================= LANGUAGE ================= -->
+    <section id="languageScreen" class="screen language-screen">
+        <h1 class="language-title">Select Your Language</h1>
+        <div id="languageGrid" class="language-grid"></div>
+    </section>
 
-        <div
-            class="temple-tamil"
-            id="welcomeTamil"
-        ></div>
 
-        <div
-            class="temple-english"
-            id="welcomeEnglish"
-        ></div>
+    <!-- ================= LANGUAGE VIDEO ================= -->
+    <section id="languageVideoScreen" class="screen intro-video-screen">
+        <video id="languageVideo" playsinline></video>
+        <button class="skip-video" onclick="videoFinished()">
+            Skip
+        </button>
+    </section>
 
-        <div
-            class="temple-code"
-            id="templeCode"
-        ></div>
 
-        <br>
+    <!-- ================= HOME ================= -->
+    <section id="homeScreen" class="screen home-screen">
 
-        <button
-            class="primary-button"
-            onclick="startApplication()"
-            id="startButton"
-        >
-            START EXPLORING
+        <div class="top-controls">
+            <div></div>
+
+            <div class="right-controls">
+                <button onclick="toggleNarrationMute()" id="muteButton">
+                    🔊
+                </button>
+                <button onclick="toggleCC()" id="ccButton">
+                    CC
+                </button>
+                <button onclick="openMenu()">☰</button>
+            </div>
+        </div>
+
+        <div class="home-content">
+            <h1 class="home-title" id="homeTitle"></h1>
+            <p class="home-description" id="homeDescription"></p>
+
+            <div class="number-entry">
+                <input
+                    id="locationNumber"
+                    type="number"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="Enter Number"
+                    onkeydown="numberKey(event)"
+                >
+                <button class="enter-number" onclick="openLocationByNumber()">
+                    Enter
+                </button>
+            </div>
+        </div>
+
+        <div class="powered-footer">
+            <img id="footerLogo2" class="powered-logo" alt="SRM Logo">
+            <div class="powered-text">
+                Powered By SRM Group of Institutions Tiruchirappalli
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ================= CONTENT ================= -->
+    <section id="contentScreen" class="screen content-screen">
+
+        <img id="contentImage" class="content-image" alt="">
+        <div class="content-overlay"></div>
+
+        <div class="top-controls">
+            <button onclick="closeContent()">×</button>
+
+            <div class="right-controls">
+                <button onclick="toggleNarrationMute()" id="muteButton2">
+                    🔊
+                </button>
+                <button onclick="toggleCC()" id="ccButton2">
+                    CC
+                </button>
+                <button onclick="openMenu()">☰</button>
+            </div>
+        </div>
+
+        <div class="content-inner">
+            <h1 id="contentTitle" class="content-title"></h1>
+            <div id="contentText" class="content-text"></div>
+        </div>
+
+        <div class="powered-footer">
+            <img id="footerLogo3" class="powered-logo" alt="SRM Logo">
+            <div class="powered-text">
+                Powered By SRM Group of Institutions Tiruchirappalli
+            </div>
+        </div>
+    </section>
+
+</div>
+
+
+<!-- ================= MENU ================= -->
+
+<div id="menuOverlay" class="menu-overlay">
+    <div class="side-menu">
+
+        <div class="menu-header">
+            <h2 id="menuTitle">Menu</h2>
+            <button class="close-menu" onclick="closeMenu()">×</button>
+        </div>
+
+        <button class="menu-item" onclick="openMusicGallery()">
+            Music Gallery
+        </button>
+
+        <button class="menu-item" onclick="openFestivalGallery()">
+            Festivals & Sevas
+        </button>
+
+        <button class="menu-item" onclick="goHome()">
+            Home
+        </button>
+
+        <button class="menu-item" onclick="openExitPassword()">
+            Exit Application
         </button>
 
     </div>
+</div>
 
-    <div class="app-footer">
 
-        <div class="powered-by-text">
-            Powered by
-            <strong>
-                SRM Group of Institutions Tiruchirappalli
-            </strong>
+<!-- ================= MUSIC ================= -->
+
+<div id="musicModal" class="modal-overlay">
+    <div class="music-modal-content">
+
+        <div class="menu-header" style="color:#08255f">
+            <h2 id="musicTitle">Music Gallery</h2>
+            <button class="close-menu"
+                    style="background:#082b71"
+                    onclick="closeMusicGallery()">
+                ×
+            </button>
         </div>
 
-        <img
-            class="footer-logo"
-            id="logo.png"
-            alt="SRM Group of Institutions"
-        >
+        <div id="musicList" class="music-list"></div>
+
+        <div id="musicLyrics" class="music-lyrics">
+            Select a devotional music.
+        </div>
+
+        <button class="stop-music" onclick="stopMusic()">
+            Stop Music
+        </button>
 
     </div>
+</div>
 
-</section>
+
+<!-- ================= FESTIVALS ================= -->
+
+<div id="festivalModal" class="modal-overlay">
+    <div class="music-modal-content">
+
+        <div class="menu-header" style="color:#08255f">
+            <h2 id="festivalTitle">Festivals & Sevas</h2>
+            <button class="close-menu"
+                    style="background:#082b71"
+                    onclick="closeFestivalGallery()">
+                ×
+            </button>
+        </div>
+
+        <div id="festivalList" class="festival-list"></div>
+
+    </div>
+</div>
 
 
-<!-- =========================================================
-     LANGUAGE
-========================================================= -->
+<!-- ================= PASSWORD ================= -->
 
-<section
-    id="languageScreen"
-    class="screen"
->
+<div id="exitModal" class="modal-overlay">
+    <div class="password-card">
 
-    <div class="language-wrap">
+        <h2 id="exitTitle">Exit Application</h2>
 
-        <h1 id="languageHeading">
-            Select Language
-        </h1>
-
-        <p id="languageDescription">
-            Choose your preferred language
+        <p id="exitMessage">
+            Enter the exit password.
         </p>
 
-        <div
-            id="languageGrid"
-            class="language-grid"
-        ></div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     INTRO VIDEO
-========================================================= -->
-
-<section
-    id="introScreen"
-    class="screen"
->
-
-    <video
-        id="1.mp4"
-        playsinline
-        preload="auto"
-    ></video>
-
-    <button
-        class="icon-button top-right"
-        onclick="toggleMute()"
-        id="introSoundButton"
-    ></button>
-
-</section>
-
-
-<!-- =========================================================
-     TITLE SCREEN
-========================================================= -->
-
-<section
-    id="titleScreen"
-    class="screen"
->
-
-    <img
-        id="titleBackground"
-        alt=""
-    >
-
-    <div class="title-overlay"></div>
-
-    <button
-        class="icon-button top-left"
-        onclick="closeContent()"
-        id="titleCloseButton"
-    ></button>
-
-    <button
-        class="icon-button top-right"
-        onclick="toggleMute()"
-        id="titleSoundButton"
-    ></button>
-
-    <div class="title-content">
-        <h1 id="titleText"></h1>
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     CONTENT
-========================================================= -->
-
-<section
-    id="contentScreen"
-    class="screen"
->
-
-    <div
-        id="contentBackground"
-    ></div>
-
-    <div
-        class="content-overlay"
-    ></div>
-
-    <button
-        class="icon-button top-left"
-        onclick="closeContent()"
-        id="contentCloseButton"
-    ></button>
-
-    <button
-        class="icon-button top-right"
-        onclick="openMenu()"
-        id="menuButton"
-    ></button>
-
-    <div
-        class="content-scroll"
-    >
-
-        <h1
-            id="contentTitle"
-        ></h1>
-
-        <div
-            id="contentDescription"
-            class="no-caption"
-        ></div>
-
-    </div>
-
-    <div
-        class="bottom-controls"
-    >
-
-        <button
-            id="soundButton"
-            class="control-button"
-            onclick="toggleMute()"
-        >
-            SOUND
-        </button>
-
-        <button
-            id="ccButton"
-            class="control-button"
-            onclick="toggleCC()"
-        >
-            CC
-        </button>
-
-        <button
-            id="musicButton"
-            class="control-button hidden"
-            onclick="openRecommendedMusic()"
-        >
-            MUSIC
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     NUMBER SCREEN
-========================================================= -->
-
-<section
-    id="numberScreen"
-    class="screen"
->
-
-    <button
-        class="icon-button top-right"
-        onclick="openMenu()"
-        id="numberMenuButton"
-    ></button>
-
-    <div
-        class="number-wrap"
-    >
-
-        <h1
-            id="numberHeading"
-        ></h1>
-
-        <p
-            id="numberText"
-        ></p>
-
-        <input
-            id="locationInput"
-            type="text"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            maxlength="5"
-            autocomplete="off"
-        >
-
-        <div
-            id="keypad"
-            class="keypad"
-        ></div>
-
-    </div>
-
-    <div class="app-footer">
-
-        <div class="powered-by-text">
-            Powered by
-            <strong>
-                SRM Group of Institutions Tiruchirappalli
-            </strong>
-        </div>
-
-        <img
-            class="footer-logo"
-            id="numberLogo"
-            alt="SRM Group of Institutions"
-        >
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     FESTIVAL LIST
-========================================================= -->
-
-<section
-    id="festivalScreen"
-    class="screen list-screen"
->
-
-    <button
-        class="icon-button top-left"
-        onclick="returnFromList()"
-        id="festivalBackButton"
-    ></button>
-
-    <div class="list-container">
-
-        <h1
-            id="festivalHeading"
-        ></h1>
-
-        <div
-            id="festivalList"
-        ></div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     SEVA LIST
-========================================================= -->
-
-<section
-    id="sevaScreen"
-    class="screen list-screen"
->
-
-    <button
-        class="icon-button top-left"
-        onclick="returnFromList()"
-        id="sevaBackButton"
-    ></button>
-
-    <div class="list-container">
-
-        <h1
-            id="sevaHeading"
-        ></h1>
-
-        <div
-            id="sevaList"
-        ></div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     MENU
-========================================================= -->
-
-<div id="menuOverlay">
-
-    <div
-        class="menu-panel"
-    >
-
-        <button
-            class="icon-button top-left"
-            onclick="closeMenu()"
-            id="menuCloseButton"
-        ></button>
-
-        <div
-            class="menu-title"
-            id="menuTitle"
-        ></div>
-
-        <button
-            class="menu-item"
-            onclick="goToNumberScreen(); closeMenu();"
-            id="exploreMenu"
-        ></button>
-
-        <button
-            class="menu-item"
-            onclick="openMusicGallery()"
-            id="musicMenu"
-        ></button>
-
-        <button
-            class="menu-item"
-            onclick="showFestivalList()"
-            id="festivalMenu"
-        ></button>
-
-        <button
-            class="menu-item"
-            onclick="showSevaList()"
-            id="sevaMenu"
-        ></button>
-
-        <button
-            class="menu-item"
-            onclick="changeLanguage()"
-            id="languageMenu"
-        ></button>
-
-        <button
-            class="menu-item"
-            onclick="openExitDialog()"
-            id="exitMenu"
-        ></button>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     MUSIC
-========================================================= -->
-
-<div
-    id="musicModal"
->
-
-    <div
-        class="music-box"
-    >
-
-        <button
-            class="icon-button top-right"
-            onclick="closeMusic()"
-            id="musicCloseButton"
-        ></button>
-
-        <h2
-            id="musicHeading"
-        ></h2>
-
-        <div
-            id="musicList"
-        ></div>
-
-        <div
-            id="lyrics"
-        ></div>
-
-        <div
-            style="
-                display:flex;
-                gap:10px;
-                margin-top:20px;
-            "
-        >
-
-            <button
-                class="control-button"
-                onclick="toggleMusic()"
-                id="musicPlayButton"
-            ></button>
-
-            <button
-                class="control-button"
-                onclick="stopMusic()"
-                id="musicStopButton"
-            ></button>
-
+        <input id="exitPassword"
+               type="password"
+               inputmode="numeric"
+               pattern="[0-9]*"
+               maxlength="7">
+
+        <div class="password-actions">
+            <button class="cancel-btn" onclick="closeExitPassword()">
+                Cancel
+            </button>
+
+            <button class="confirm-exit" onclick="verifyExitPassword()">
+                Exit
+            </button>
         </div>
 
     </div>
-
 </div>
 
 
-<!-- =========================================================
-     EXIT PASSWORD
-========================================================= -->
+<!-- ================= HEADPHONE ================= -->
 
-<div
-    id="exitDialog"
->
+<div id="headphoneRequired">
 
-    <div
-        class="exit-box"
-    >
+    <div class="headphone-card">
+        <div class="headphone-symbol">🎧</div>
 
-        <h2
-            id="exitHeading"
-        ></h2>
+        <h2 id="headphoneTitle">
+            Headphones Required
+        </h2>
 
-        <p
-            id="exitText"
-        ></p>
+        <p id="headphoneMessage">
+            Connect headphones to listen to the temple guide.
+        </p>
 
-        <input
-            id="exitPassword"
-            type="password"
-            inputmode="numeric"
-            autocomplete="off"
-        >
-
-        <div
-            class="dialog-buttons"
-        >
-
-            <button
-                class="control-button"
-                onclick="closeExitDialog()"
-                id="cancelExitButton"
-            ></button>
-
-            <button
-                class="primary-button"
-                onclick="verifyExit()"
-                id="confirmExitButton"
-            ></button>
-
-        </div>
-
+        <button onclick="checkAndResumeAudio()">
+            Check Connection
+        </button>
     </div>
 
 </div>
 
 
+<div id="errorBox"></div>
+
+
 <!-- =========================================================
-     EXIT SCREEN
-========================================================= -->
-
-<section
-    id="exitScreen"
-    class="screen"
->
-
-    <div
-        class="exit-screen-content"
-    >
-
-        <h1
-            id="exitMessage"
-        ></h1>
-
-        <p
-            id="exitThankYou"
-        ></p>
-
-        <br><br>
-
-        <button
-            class="primary-button"
-            onclick="goHome()"
-            id="homeButton"
-        ></button>
-
-    </div>
-
-</section>
-
-
-</div>
-
-<div id="toast"></div>
-
+     JAVASCRIPT
+     ========================================================= -->
 
 <script>
 
 /* =========================================================
-   ICONS
-========================================================= */
+   APPLICATION DATA
 
-const ICONS = {
+   REPLACE THE FILE PATHS WITH YOUR OWN FILES.
 
-    close: `
-        <svg viewBox="0 0 24 24">
-            <path
-                d="
-                    M18.3 5.7
-                    16.9 4.3
-                    12 9.2
-                    7.1 4.3
-                    5.7 5.7
-                    10.6 10.6
-                    5.7 15.5
-                    7.1 16.9
-                    12 12
-                    16.9 16.9
-                    18.3 15.5
-                    13.4 10.6
-                    Z
-                "
-            />
-        </svg>
-    `,
+   Example:
+   assets/videos/opening.mp4
+   assets/images/logo.png
+   assets/audio/tamil/1.mp3
 
-    menu: `
-        <svg viewBox="0 0 24 24">
-            <path
-                d="
-                    M3 6h18v2H3z
-                    M3 11h18v2H3z
-                    M3 16h18v2H3z
-                "
-            />
-        </svg>
-    `,
+   ========================================================= */
 
-    sound: `
-        <svg viewBox="0 0 24 24">
-            <path
-                d="
-                    M3 9v6h4l5 4V5L7 9zm11 3
-                    a4.5 4.5 0 0 0-2.5-4.03
-                    v8.05A4.5 4.5 0 0 0 14 12zm2.5 0
-                    a7 7 0 0 1-2.5 5.39v2.08
-                    A9 9 0 0 0 16.5 4.61
-                    v2.08A7 7 0 0 1 18.5 12z
-                "
-            />
-        </svg>
-    `,
+const APP = {
 
-    mute: `
-        <svg viewBox="0 0 24 24">
-            <path
-                d="
-                    M3 9v6h4l5 4V5L7 9zm11.2 3
-                    2.8-2.8
-                    1.4 1.4
-                    -2.8 2.8
-                    2.8 2.8
-                    -1.4 1.4
-                    -2.8-2.8
-                    -2.8 2.8
-                    -1.4-1.4
-                    2.8-2.8
-                    -2.8-2.8
-                    1.4-1.4z
-                "
-            />
-        </svg>
-    `,
-
-    back: `
-        <svg viewBox="0 0 24 24">
-            <path
-                d="
-                    M20 11H7.83l5.59-5.59L12 4l-8 8
-                    8 8 1.41-1.41L7.83 13H20z
-                "
-            />
-        </svg>
-    `
-};
-
-
-/* =========================================================
-   CONFIGURATION
-========================================================= */
-
-const CONFIG = {
-
-    templeTamil:
-        "அருள்மிகு அரங்கநாதசுவாமி திருக்கோயில், ஸ்ரீரங்கம்",
-
-    templeEnglish:
-        "Arulmigu Aranganatha Swamy Temple, Srirangam",
-
-    templeCode:
-        "TM025700",
-
-    welcomeVideo:
-        "2.mp4",
-
-    /* DEFAULT INTRO VIDEO */
-    introVideo:
-        "1.mp4",
-
-    /*
-       LANGUAGE-SPECIFIC VIDEO
-       Replace each file with the video you provide.
-       The entire selected video must finish before
-       the number screen appears.
-    */
-    introVideos: {
-
-        ta: "1.mp4",
-        en: "1.mp4",
-        te: "1.mp4",
-        ml: "1.mp4",
-        kn: "1.mp4",
-        hi: "1.mp4",
-        fr: "1.mp4",
-        ja: "1.mp4",
-        ms: "1.mp4",
-        de: "1.mp4"
-
+    temple: {
+        ta: "அருள்மிகு அரங்கநாதசுவாமி திருக்கோயில், ஸ்ரீரங்கம்",
+        en: "Arulmigu Aranganatha Swamy Temple, Srirangam",
+        te: "శ్రీ రంగనాథస్వామి దేవాలయం, శ్రీరంగం",
+        ml: "അരുള്മിഗു അരങ്ങനാഥസ്വാമി ക്ഷേത്രം, ശ്രീരംഗം",
+        kn: "ಅರುಳ್ಮಿಗು ರಂಗನಾಥಸ್ವಾಮಿ ದೇವಸ್ಥಾನ, ಶ್ರೀರಂಗಂ",
+        hi: "अरुल्मिगु रंगनाथस्वामी मंदिर, श्रीरंगम",
+        fr: "Temple d'Arulmigu Aranganatha Swamy, Srirangam",
+        ja: "アルルミグ・アランガナータ・スワミ寺院",
+        ms: "Kuil Arulmigu Aranganatha Swamy, Srirangam",
+        de: "Arulmigu Aranganatha Swamy Tempel, Srirangam"
     },
 
-    titleBackground:
-        "assets/title-background.jpg",
-
-    srmLogo:
-        "logo.png",
-
-    exitPassword:
-        "2404266"
-
-};
-
-
-/* =========================================================
-   APPLICATION STATE
-========================================================= */
-
-const STATE = {
-
-    language: "en",
-
-    muted: false,
-
-    ccEnabled: false,
-
-    currentContent: null,
-
-    previousScreen:
-        "numberScreen",
-
-    currentMusic: null,
-
-    captionTimer: null,
-
-    applicationStarted: false,
-
-    exitApproved: false
-
-};
-
-
-/* =========================================================
-   LANGUAGE DEFINITIONS
-========================================================= */
-
-const LANGUAGES = [
-
-    {
-        code: "ta",
-        native: "தமிழ்",
-        name: "Tamil"
+    address: {
+        ta: "ஸ்ரீரங்கம் - 620006, திருச்சிராப்பள்ளி மாவட்டம் [TM025700]",
+        en: "Srirangam - 620006, Thiruchirappalli District [TM025700]",
+        te: "శ్రీరంగం - 620006, తిరుచిరాపల్లి జిల్లా [TM025700]",
+        ml: "ശ്രീരംഗം - 620006, തിരുച്ചിറപ്പള്ളി ജില്ല [TM025700]",
+        kn: "ಶ್ರೀರಂಗಂ - 620006, ತಿರುಚಿರಾಪಳ್ಳಿ ಜಿಲ್ಲೆ [TM025700]",
+        hi: "श्रीरंगम - 620006, तिरुचिरापल्ली जिला [TM025700]",
+        fr: "Srirangam - 620006, district de Thiruchirappalli [TM025700]",
+        ja: "スリランガム - 620006、ティルチラーパッリ地区 [TM025700]",
+        ms: "Srirangam - 620006, Daerah Thiruchirappalli [TM025700]",
+        de: "Srirangam - 620006, Bezirk Thiruchirappalli [TM025700]"
     },
 
-    {
-        code: "en",
-        native: "English",
-        name: "English"
+    files: {
+        startVideo: "2.mp4",
+        languageVideo: "1.mp4",
+        homeBackground: "YOUR_TEMPLE_BACKGROUND_IMAGE.jpg",
+        srmLogo: "logo.png",
+        titleBackground: "YOUR_TITLE_BACKGROUND_IMAGE.jpg"
     },
 
-    {
-        code: "te",
-        native: "తెలుగు",
-        name: "Telugu"
-    },
+    languages: [
+        {code:"ta", name:"தமிழ்"},
+        {code:"en", name:"English"},
+        {code:"te", name:"తెలుగు"},
+        {code:"ml", name:"മലയാളം"},
+        {code:"kn", name:"ಕನ್ನಡ"},
+        {code:"hi", name:"हिन्दी"},
+        {code:"fr", name:"Français"},
+        {code:"ja", name:"日本語"},
+        {code:"ms", name:"Bahasa Melayu"},
+        {code:"de", name:"Deutsch"}
+    ],
 
-    {
-        code: "ml",
-        native: "മലയാളം",
-        name: "Malayalam"
-    },
+    ui: {
 
-    {
-        code: "kn",
-        native: "ಕನ್ನಡ",
-        name: "Kannada"
-    },
-
-    {
-        code: "hi",
-        native: "हिन्दी",
-        name: "Hindi"
-    },
-
-    {
-        code: "fr",
-        native: "Français",
-        name: "French"
-    },
-
-    {
-        code: "ja",
-        native: "日本語",
-        name: "Japanese"
-    },
-
-    {
-        code: "ms",
-        native: "Bahasa Melayu",
-        name: "Malay"
-    },
-
-    {
-        code: "de",
-        native: "Deutsch",
-        name: "German"
-    }
-
-];
-
-
-/* =========================================================
-   TRANSLATIONS
-   Add or replace translations as required.
-========================================================= */
-
-const UI = {
-
-    selectLanguage: {
-        en: "Select Language",
-        ta: "மொழியைத் தேர்ந்தெடுக்கவும்",
-        te: "భాషను ఎంచుకోండి",
-        ml: "ഭാഷ തിരഞ്ഞെടുക്കുക",
-        kn: "ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
-        hi: "भाषा चुनें",
-        fr: "Choisir la langue",
-        ja: "言語を選択",
-        ms: "Pilih Bahasa",
-        de: "Sprache auswählen"
-    },
-
-    chooseLanguage: {
-        en: "Choose your preferred language",
-        ta: "உங்களுக்கு விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்",
-        te: "మీకు నచ్చిన భాషను ఎంచుకోండి",
-        ml: "നിങ്ങൾക്ക് ഇഷ്ടമുള്ള ഭാഷ തിരഞ്ഞെടുക്കുക",
-        kn: "ನಿಮ್ಮ ಆದ್ಯತೆಯ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
-        hi: "अपनी पसंदीदा भाषा चुनें",
-        fr: "Choisissez votre langue préférée",
-        ja: "希望する言語を選択してください",
-        ms: "Pilih bahasa pilihan anda",
-        de: "Wählen Sie Ihre bevorzugte Sprache"
-    },
-
-    start: {
-        en: "START EXPLORING",
-        ta: "பயணத்தைத் தொடங்குங்கள்",
-        te: "అన్వేషణ ప్రారంభించండి",
-        ml: "പര്യവേക്ഷണം ആരംഭിക്കുക",
-        kn: "ಅನ್ವೇಷಣೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ",
-        hi: "अन्वेषण शुरू करें",
-        fr: "COMMENCER LA VISITE",
-        ja: "探索を開始",
-        ms: "MULA MENEROKA",
-        de: "ERKUNDUNG STARTEN"
-    },
-
-    explore: {
-        en: "Explore the Temple",
-        ta: "திருக்கோயிலை ஆராயுங்கள்",
-        te: "దేవాలయాన్ని అన్వేషించండి",
-        ml: "ക്ഷേത്രം പര്യവേക്ഷണം ചെയ്യുക",
-        kn: "ದೇವಾಲಯವನ್ನು ಅನ್ವೇಷಿಸಿ",
-        hi: "मंदिर का अन्वेषण करें",
-        fr: "Explorer le temple",
-        ja: "寺院を探索",
-        ms: "Terokai Kuil",
-        de: "Tempel erkunden"
-    },
-
-    numberText: {
-        en: "Enter the location number displayed at the temple.",
-        ta: "திருக்கோயிலில் காட்டப்பட்டுள்ள இட எண்ணை உள்ளிடவும்.",
-        te: "దేవాలయంలో ప్రదర్శించిన ప్రదేశ సంఖ్యను నమోదు చేయండి.",
-        ml: "ക്ഷേത്രത്തിൽ കാണിച്ചിരിക്കുന്ന സ്ഥല നമ്പർ നൽകുക.",
-        kn: "ದೇವಾಲಯದಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲಾದ ಸ್ಥಳ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.",
-        hi: "मंदिर में प्रदर्शित स्थान संख्या दर्ज करें।",
-        fr: "Saisissez le numéro du lieu affiché dans le temple.",
-        ja: "寺院に表示されている場所の番号を入力してください。",
-        ms: "Masukkan nombor lokasi yang dipaparkan di kuil.",
-        de: "Geben Sie die im Tempel angezeigte Standortnummer ein."
-    },
-
-    menu: {
-        en: "Temple Menu",
-        ta: "திருக்கோயில் பட்டியல்",
-        te: "దేవాలయ మెనూ",
-        ml: "ക്ഷേത്ര മെനു",
-        kn: "ದೇವಾಲಯ ಮೆನು",
-        hi: "मंदिर मेनू",
-        fr: "Menu du temple",
-        ja: "寺院メニュー",
-        ms: "Menu Kuil",
-        de: "Tempelmenü"
-    },
-
-    exploreTemple: {
-        en: "EXPLORE TEMPLE",
-        ta: "திருக்கோயிலை ஆராயுங்கள்",
-        te: "దేవాలయాన్ని అన్వేషించండి",
-        ml: "ക്ഷേത്രം പര്യവേക്ഷണം ചെയ്യുക",
-        kn: "ದೇವಾಲಯವನ್ನು ಅನ್ವೇಷಿಸಿ",
-        hi: "मंदिर का अन्वेषण करें",
-        fr: "EXPLORER LE TEMPLE",
-        ja: "寺院を探索",
-        ms: "TEROKAI KUIL",
-        de: "TEMPEL ERKUNDEN"
-    },
-
-    musicGallery: {
-        en: "MUSIC GALLERY",
-        ta: "இசைத் தொகுப்பு",
-        te: "సంగీత గ్యాలరీ",
-        ml: "സംഗീത ശേഖരം",
-        kn: "ಸಂಗೀತ ಗ್ಯಾಲರಿ",
-        hi: "संगीत संग्रह",
-        fr: "GALERIE MUSICALE",
-        ja: "音楽ギャラリー",
-        ms: "GALERI MUZIK",
-        de: "MUSIKGALERIE"
-    },
-
-    festivals: {
-        en: "FESTIVALS",
-        ta: "திருவிழாக்கள்",
-        te: "పండుగలు",
-        ml: "ഉത്സവങ്ങൾ",
-        kn: "ಹಬ್ಬಗಳು",
-        hi: "उत्सव",
-        fr: "FESTIVALS",
-        ja: "祭り",
-        ms: "PERAYAAN",
-        de: "FESTE"
-    },
-
-    sevas: {
-        en: "SEVAS",
-        ta: "சேவைகள்",
-        te: "సేవలు",
-        ml: "സേവകൾ",
-        kn: "ಸೇವೆಗಳು",
-        hi: "सेवाएं",
-        fr: "SERVICES",
-        ja: "奉仕",
-        ms: "SEVA",
-        de: "DIENSTE"
-    },
-
-    changeLanguage: {
-        en: "CHANGE LANGUAGE",
-        ta: "மொழியை மாற்றவும்",
-        te: "భాషను మార్చండి",
-        ml: "ഭാഷ മാറ്റുക",
-        kn: "ಭಾಷೆ ಬದಲಾಯಿಸಿ",
-        hi: "भाषा बदलें",
-        fr: "CHANGER DE LANGUE",
-        ja: "言語を変更",
-        ms: "TUKAR BAHASA",
-        de: "SPRACHE ÄNDERN"
-    },
-
-    exit: {
-        en: "EXIT APPLICATION",
-        ta: "செயலியிலிருந்து வெளியேறு",
-        te: "అప్లికేషన్ నుండి నిష్క్రమించండి",
-        ml: "ആപ്ലിക്കേഷനിൽ നിന്ന് പുറത്തുകടക്കുക",
-        kn: "ಅಪ್ಲಿಕೇಶನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ",
-        hi: "एप्लिकेशन से बाहर निकलें",
-        fr: "QUITTER L'APPLICATION",
-        ja: "アプリを終了",
-        ms: "KELUAR APLIKASI",
-        de: "ANWENDUNG BEENDEN"
-    },
-
-    enterPassword: {
-        en: "Enter password to exit the application.",
-        ta: "செயலியிலிருந்து வெளியேற கடவுச்சொல்லை உள்ளிடவும்.",
-        te: "అప్లికేషన్ నుండి నిష్క్రమించడానికి పాస్‌వర్డ్ నమోదు చేయండి.",
-        ml: "ആപ്ലിക്കേഷനിൽ നിന്ന് പുറത്തുകടക്കാൻ പാസ്‌വേഡ് നൽകുക.",
-        kn: "ಅಪ್ಲಿಕೇಶನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.",
-        hi: "एप्लिकेशन से बाहर निकलने के लिए पासवर्ड दर्ज करें।",
-        fr: "Entrez le mot de passe pour quitter.",
-        ja: "終了するにはパスワードを入力してください。",
-        ms: "Masukkan kata laluan untuk keluar.",
-        de: "Geben Sie zum Beenden das Passwort ein."
-    },
-
-    cancel: {
-        en: "CANCEL",
-        ta: "ரத்து செய்",
-        te: "రద్దు",
-        ml: "റദ്ദാക്കുക",
-        kn: "ರದ್ದುಮಾಡಿ",
-        hi: "रद्द करें",
-        fr: "ANNULER",
-        ja: "キャンセル",
-        ms: "BATAL",
-        de: "ABBRECHEN"
-    },
-
-    confirm: {
-        en: "EXIT",
-        ta: "வெளியேறு",
-        te: "నిష్క్రమించు",
-        ml: "പുറത്തുകടക്കുക",
-        kn: "ನಿರ್ಗಮಿಸಿ",
-        hi: "बाहर निकलें",
-        fr: "QUITTER",
-        ja: "終了",
-        ms: "KELUAR",
-        de: "BEENDEN"
-    },
-
-    music: {
-        en: "Music Gallery",
-        ta: "இசைத் தொகுப்பு",
-        te: "సంగీత గ్యాలరీ",
-        ml: "സംഗീത ശേഖരം",
-        kn: "ಸಂಗೀತ ಗ್ಯಾಲರಿ",
-        hi: "संगीत संग्रह",
-        fr: "Galerie musicale",
-        ja: "音楽ギャラリー",
-        ms: "Galeri Muzik",
-        de: "Musikgalerie"
-    },
-
-    playPause: {
-        en: "PLAY / PAUSE",
-        ta: "இயக்கு / இடைநிறுத்து",
-        te: "ప్లే / పాజ్",
-        ml: "പ്ലേ / നിർത്തുക",
-        kn: "ಪ್ಲೇ / ವಿರಾಮ",
-        hi: "चलाएं / रोकें",
-        fr: "LECTURE / PAUSE",
-        ja: "再生 / 一時停止",
-        ms: "MAIN / JEDA",
-        de: "WIEDERGABE / PAUSE"
-    },
-
-    stop: {
-        en: "STOP",
-        ta: "நிறுத்து",
-        te: "ఆపు",
-        ml: "നിർത്തുക",
-        kn: "ನಿಲ್ಲಿಸಿ",
-        hi: "रोकें",
-        fr: "ARRÊTER",
-        ja: "停止",
-        ms: "BERHENTI",
-        de: "STOPP"
-    },
-
-    enter: {
-        en: "ENTER",
-        ta: "உள்ளிடு",
-        te: "ఎంటర్",
-        ml: "നൽകുക",
-        kn: "ನಮೂದಿಸಿ",
-        hi: "दर्ज करें",
-        fr: "ENTRER",
-        ja: "入力",
-        ms: "MASUK",
-        de: "EINGEBEN"
-    },
-
-    clear: {
-        en: "CLEAR",
-        ta: "அழி",
-        te: "తొలగించు",
-        ml: "മായ്ക്കുക",
-        kn: "ಅಳಿಸಿ",
-        hi: "साफ़ करें",
-        fr: "EFFACER",
-        ja: "クリア",
-        ms: "PADAM",
-        de: "LÖSCHEN"
-    },
-
-    back: {
-        en: "BACK",
-        ta: "பின்",
-        te: "వెనుకకు",
-        ml: "തിരികെ",
-        kn: "ಹಿಂದೆ",
-        hi: "वापस",
-        fr: "RETOUR",
-        ja: "戻る",
-        ms: "KEMBALI",
-        de: "ZURÜCK"
-    },
-
-    thankYou: {
-        en: "Thank you for visiting the Temple Tour Application.",
-        ta: "திருக்கோயில் பயண செயலியைப் பயன்படுத்தியதற்கு நன்றி.",
-        te: "టెంపుల్ టూర్ అప్లికేషన్‌ను సందర్శించినందుకు ధన్యవాదాలు.",
-        ml: "ടെമ്പിൾ ടൂർ ആപ്ലിക്കേഷൻ സന്ദർശിച്ചതിന് നന്ദി.",
-        kn: "ಟೆಂಪಲ್ ಟೂರ್ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಭೇಟಿ ನೀಡಿದ್ದಕ್ಕಾಗಿ ಧನ್ಯವಾದಗಳು.",
-        hi: "टेंपल टूर एप्लिकेशन देखने के लिए धन्यवाद।",
-        fr: "Merci d'avoir utilisé l'application Temple Tour.",
-        ja: "寺院ツアーアプリをご利用いただきありがとうございます。",
-        ms: "Terima kasih kerana menggunakan aplikasi Temple Tour.",
-        de: "Vielen Dank für die Nutzung der Temple Tour Anwendung."
-    },
-
-    applicationClosed: {
-        en: "Temple Tour Closed",
-        ta: "திருக்கோயில் பயணம் முடிந்தது",
-        te: "టెంపుల్ టూర్ ముగిసింది",
-        ml: "ടെമ്പിൾ ടൂർ അവസാനിച്ചു",
-        kn: "ಟೆಂಪಲ್ ಟೂರ್ ಮುಗಿದಿದೆ",
-        hi: "टेंपल टूर बंद हो गया",
-        fr: "Visite du temple terminée",
-        ja: "寺院ツアーを終了しました",
-        ms: "Lawatan Kuil Ditutup",
-        de: "Tempeltour beendet"
-    },
-
-    home: {
-        en: "RETURN TO HOME",
-        ta: "முகப்புக்குத் திரும்பு",
-        te: "హోమ్‌కు తిరిగి వెళ్ళు",
-        ml: "ഹോമിലേക്ക് മടങ്ങുക",
-        kn: "ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ",
-        hi: "होम पर वापस जाएं",
-        fr: "RETOUR À L'ACCUEIL",
-        ja: "ホームに戻る",
-        ms: "KEMBALI KE UTAMA",
-        de: "ZUR STARTSEITE"
-    }
-
-};
-
-
-/* =========================================================
-   SAMPLE CONTENT
-   REPLACE WITH YOUR ACTUAL CONTENT
-========================================================= */
-
-const LOCATIONS = [
-
-    {
-        number: "1",
-
-        title: {
-            en: "Temple Entrance",
-            ta: "திருக்கோயில் நுழைவாயில்"
+        selectLanguage: {
+            ta:"மொழியைத் தேர்ந்தெடுக்கவும்",
+            en:"Select Your Language",
+            te:"మీ భాషను ఎంచుకోండి",
+            ml:"നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കുക",
+            kn:"ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+            hi:"अपनी भाषा चुनें",
+            fr:"Sélectionnez votre langue",
+            ja:"言語を選択してください",
+            ms:"Pilih Bahasa Anda",
+            de:"Wählen Sie Ihre Sprache"
         },
 
-        description: {
-            en:
-`Replace this with the official English description for location number 1.`,
-
-            ta:
-`இடம் எண் 1-க்கான அதிகாரப்பூர்வ தமிழ் விளக்கத்தை இங்கு சேர்க்கவும்.`
+        enterNumber: {
+            ta:"எண்ணை உள்ளிடவும்",
+            en:"Enter Number",
+            te:"సంఖ్యను నమోదు చేయండి",
+            ml:"നമ്പർ നൽകുക",
+            kn:"ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ",
+            hi:"संख्या दर्ज करें",
+            fr:"Entrez le numéro",
+            ja:"番号を入力",
+            ms:"Masukkan Nombor",
+            de:"Nummer eingeben"
         },
 
-        image:
-            "assets/locations/location-1.jpg",
-
-        audio: {
-            en: "assets/audio/location-1-en.mp3",
-            ta: "assets/audio/location-1-ta.mp3"
+        menu: {
+            ta:"பட்டியல்", en:"Menu", te:"మెను", ml:"മെനു",
+            kn:"ಮೆನು", hi:"मेनू", fr:"Menu",
+            ja:"メニュー", ms:"Menu", de:"Menü"
         },
 
-        music:
-            ["music1"]
-
-    },
-
-    {
-        number: "2",
-
-        title: {
-            en: "Temple Courtyard",
-            ta: "திருக்கோயில் முற்றம்"
+        music: {
+            ta:"இசை தொகுப்பு", en:"Music Gallery",
+            te:"సంగీత గ్యాలరీ", ml:"സംഗീത ശേഖരം",
+            kn:"ಸಂಗೀತ ಗ್ಯಾಲರಿ", hi:"संगीत संग्रह",
+            fr:"Galerie musicale", ja:"音楽ギャラリー",
+            ms:"Galeri Muzik", de:"Musikgalerie"
         },
 
-        description: {
-            en:
-`Replace this with the official English description for location number 2.`,
-
-            ta:
-`இடம் எண் 2-க்கான அதிகாரப்பூர்வ தமிழ் விளக்கத்தை இங்கு சேர்க்கவும்.`
+        festivals: {
+            ta:"திருவிழாக்கள் மற்றும் சேவைகள்",
+            en:"Festivals & Sevas",
+            te:"పండుగలు మరియు సేవలు",
+            ml:"ഉത്സവങ്ങളും സേവകളും",
+            kn:"ಹಬ್ಬಗಳು ಮತ್ತು ಸೇವೆಗಳು",
+            hi:"त्योहार और सेवाएं",
+            fr:"Festivals et Sevas",
+            ja:"祭りとセヴァ",
+            ms:"Perayaan dan Seva",
+            de:"Feste und Sevas"
         },
 
-        image:
-            "assets/locations/location-2.jpg",
-
-        audio: {
-            en: "assets/audio/location-2-en.mp3",
-            ta: "assets/audio/location-2-ta.mp3"
+        home: {
+            ta:"முகப்பு", en:"Home", te:"హోమ్", ml:"ഹോം",
+            kn:"ಮುಖಪುಟ", hi:"होम", fr:"Accueil",
+            ja:"ホーム", ms:"Utama", de:"Startseite"
         },
 
-        music:
-            []
-
-    }
-
-];
-
-
-/* =========================================================
-   FESTIVALS
-========================================================= */
-
-const FESTIVALS = [
-
-    {
-        id: "festival1",
-
-        title: {
-            en: "Festival One",
-            ta: "திருவிழா ஒன்று"
-        },
-
-        description: {
-            en:
-`Replace this with official festival information.`,
-
-            ta:
-`அதிகாரப்பூர்வ திருவிழா தகவலை இங்கு சேர்க்கவும்.`
-        },
-
-        image:
-            "assets/festivals/festival-1.jpg",
-
-        audio: {
-            en: "assets/audio/festival-1-en.mp3",
-            ta: "assets/audio/festival-1-ta.mp3"
+        exit: {
+            ta:"வெளியேறு",
+            en:"Exit Application",
+            te:"నిష్క్రమించు",
+            ml:"ആപ്ലിക്കേഷൻ അടയ്ക്കുക",
+            kn:"ನಿರ್ಗಮಿಸಿ",
+            hi:"एप्लिकेशन से बाहर निकलें",
+            fr:"Quitter l'application",
+            ja:"アプリを終了",
+            ms:"Keluar Aplikasi",
+            de:"Anwendung beenden"
         }
-
-    }
-
-];
+    },
 
 
-/* =========================================================
-   SEVAS
-========================================================= */
+    /* =====================================================
+       TEMPLE LOCATIONS
+       ADD ALL TEMPLE NUMBERED LOCATIONS HERE.
+       ===================================================== */
 
-const SEVAS = [
+    locations: {
 
-    {
-        id: "seva1",
+        "1": {
 
-        title: {
-            en: "Seva One",
-            ta: "சேவை ஒன்று"
+            image: "YOUR_LOCATION_1_IMAGE.jpg",
+
+            title: {
+                ta:"கோயில் அறிமுகம்",
+                en:"Introduction to the Temple",
+                te:"ఆలయ పరిచయం",
+                ml:"ക്ഷേത്ര പരിചയം",
+                kn:"ದೇವಸ್ಥಾನದ ಪರಿಚಯ",
+                hi:"मंदिर का परिचय",
+                fr:"Présentation du temple",
+                ja:"寺院の紹介",
+                ms:"Pengenalan Kuil",
+                de:"Einführung in den Tempel"
+            },
+
+            text: {
+                ta:"இங்கு தமிழ் உள்ளடக்கத்தைச் சேர்க்கவும்.",
+                en:"Add the English temple guide content here.",
+                te:"తెలుగు కంటెంట్‌ను ఇక్కడ చేర్చండి.",
+                ml:"മലയാളം ഉള്ളടക്കം ഇവിടെ ചേർക്കുക.",
+                kn:"ಕನ್ನಡ ವಿಷಯವನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ.",
+                hi:"हिंदी सामग्री यहां जोड़ें।",
+                fr:"Ajoutez ici le contenu en français.",
+                ja:"ここに日本語のコンテンツを追加してください。",
+                ms:"Tambah kandungan Bahasa Melayu di sini.",
+                de:"Fügen Sie hier den deutschen Inhalt hinzu."
+            },
+
+            audio: {
+                ta:"audio/ta/1.mp3",
+                en:"audio/en/1.mp3",
+                te:"audio/te/1.mp3",
+                ml:"audio/ml/1.mp3",
+                kn:"audio/kn/1.mp3",
+                hi:"audio/hi/1.mp3",
+                fr:"audio/fr/1.mp3",
+                ja:"audio/ja/1.mp3",
+                ms:"audio/ms/1.mp3",
+                de:"audio/de/1.mp3"
+            }
         },
 
-        description: {
-            en:
-`Replace this with official seva information.`,
 
-            ta:
-`அதிகாரப்பூர்வ சேவை தகவலை இங்கு சேர்க்கவும்.`
-        },
+        "2": {
 
-        image:
-            "assets/sevas/seva-1.jpg",
+            image: "YOUR_LOCATION_2_IMAGE.jpg",
 
-        audio: {
-            en: "assets/audio/seva-1-en.mp3",
-            ta: "assets/audio/seva-1-ta.mp3"
+            title: {
+                ta:"முக்கிய பகுதி",
+                en:"Important Temple Area",
+                te:"ముఖ్యమైన ఆలయ ప్రదేశం",
+                ml:"പ്രധാന ക്ഷേത്രഭാഗം",
+                kn:"ಪ್ರಮುಖ ದೇವಾಲಯ ಪ್ರದೇಶ",
+                hi:"मंदिर का महत्वपूर्ण स्थान",
+                fr:"Zone importante du temple",
+                ja:"重要な寺院エリア",
+                ms:"Kawasan Penting Kuil",
+                de:"Wichtiger Tempelbereich"
+            },
+
+            text: {
+                ta:"இங்கு இரண்டாவது இடத்திற்கான தமிழ் விளக்கத்தைச் சேர்க்கவும்.",
+                en:"Add the detailed description for location number 2 here.",
+                te:"రెండవ ప్రదేశానికి సంబంధించిన వివరణను ఇక్కడ చేర్చండి.",
+                ml:"രണ്ടാമത്തെ സ്ഥലത്തിന്റെ വിവരണം ഇവിടെ ചേർക്കുക.",
+                kn:"ಎರಡನೇ ಸ್ಥಳದ ವಿವರಣೆಯನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ.",
+                hi:"दूसरे स्थान का विवरण यहां जोड़ें।",
+                fr:"Ajoutez ici la description du deuxième lieu.",
+                ja:"2番目の場所の説明をここに追加してください。",
+                ms:"Tambah penerangan lokasi kedua di sini.",
+                de:"Fügen Sie hier die Beschreibung des zweiten Ortes hinzu."
+            },
+
+            audio: {
+                ta:"audio/ta/2.mp3",
+                en:"audio/en/2.mp3",
+                te:"audio/te/2.mp3",
+                ml:"audio/ml/2.mp3",
+                kn:"audio/kn/2.mp3",
+                hi:"audio/hi/2.mp3",
+                fr:"audio/fr/2.mp3",
+                ja:"audio/ja/2.mp3",
+                ms:"audio/ms/2.mp3",
+                de:"audio/de/2.mp3"
+            }
         }
-
-    }
-
-];
+    },
 
 
-/* =========================================================
-   MUSIC
-========================================================= */
+    /* =====================================================
+       FESTIVALS AND SEVAS
+       ===================================================== */
 
-const MUSIC = [
+    festivals: [
 
-    {
-        id: "music1",
+        {
+            image:"YOUR_FESTIVAL_IMAGE_1.jpg",
 
-        title: {
-            en: "Devotional Music",
-            ta: "பக்தி இசை"
-        },
+            title:{
+                ta:"வைகுண்ட ஏகாதசி",
+                en:"Vaikunta Ekadasi",
+                te:"వైకుంఠ ఏకాదశి",
+                ml:"വൈകുണ്ഠ ഏകാദശി",
+                kn:"ವೈಕುಂಠ ಏಕಾದಶಿ",
+                hi:"वैकुंठ एकादशी",
+                fr:"Vaikunta Ekadasi",
+                ja:"ヴァイクンタ・エカーダシ",
+                ms:"Vaikunta Ekadasi",
+                de:"Vaikunta Ekadasi"
+            },
 
-        audio:
-            "assets/music/music-1.mp3",
+            text:{
+                ta:"வைகுண்ட ஏகாதசியின் விளக்கத்தை இங்கே சேர்க்கவும்.",
+                en:"Add the complete description of Vaikunta Ekadasi here.",
+                te:"వైకుంఠ ఏకాదశి వివరాలను ఇక్కడ చేర్చండి.",
+                ml:"വൈകുണ്ഠ ഏകാദശിയുടെ വിവരണം ഇവിടെ ചേർക്കുക.",
+                kn:"ವೈಕುಂಠ ಏಕಾದಶಿಯ ವಿವರಣೆಯನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ.",
+                hi:"वैकुंठ एकादशी का विवरण यहां जोड़ें।",
+                fr:"Ajoutez ici la description du Vaikunta Ekadasi.",
+                ja:"ヴァイクンタ・エカーダシの説明をここに追加してください。",
+                ms:"Tambah penerangan Vaikunta Ekadasi di sini.",
+                de:"Fügen Sie hier die Beschreibung von Vaikunta Ekadasi hinzu."
+            },
 
-        lyrics: {
-            en:
-`Add the translated lyrics here.`,
-
-            ta:
-`பாடல் வரிகள் மற்றும் மொழிபெயர்ப்பை இங்கு சேர்க்கவும்.`
+            audio:{
+                ta:"audio/ta/festival1.mp3",
+                en:"audio/en/festival1.mp3",
+                te:"audio/te/festival1.mp3",
+                ml:"audio/ml/festival1.mp3",
+                kn:"audio/kn/festival1.mp3",
+                hi:"audio/hi/festival1.mp3",
+                fr:"audio/fr/festival1.mp3",
+                ja:"audio/ja/festival1.mp3",
+                ms:"audio/ms/festival1.mp3",
+                de:"audio/de/festival1.mp3"
+            }
         }
+    ],
 
-    }
 
-];
+    /* =====================================================
+       MUSIC GALLERY
+       ===================================================== */
+
+    music: [
+
+        {
+            title:{
+                ta:"அரங்கநாதர் பக்திப் பாடல்",
+                en:"Aranganatha Swamy Devotional Song",
+                te:"రంగనాథ స్వామి భక్తి గీతం",
+                ml:"രംഗനാഥസ്വാമി ഭക്തിഗാനം",
+                kn:"ರಂಗನಾಥಸ್ವಾಮಿ ಭಕ್ತಿಗೀತೆ",
+                hi:"रंगनाथ स्वामी भक्ति गीत",
+                fr:"Chant dévotionnel Aranganatha Swamy",
+                ja:"ランガナータ・スワミ讃歌",
+                ms:"Lagu Devosi Aranganatha Swamy",
+                de:"Aranganatha Swamy Andachtslied"
+            },
+
+            audio:{
+                ta:"music/ta/song1.mp3",
+                en:"music/en/song1.mp3",
+                te:"music/te/song1.mp3",
+                ml:"music/ml/song1.mp3",
+                kn:"music/kn/song1.mp3",
+                hi:"music/hi/song1.mp3",
+                fr:"music/fr/song1.mp3",
+                ja:"music/ja/song1.mp3",
+                ms:"music/ms/song1.mp3",
+                de:"music/de/song1.mp3"
+            },
+
+            lyrics:{
+                ta:"பாடல் வரிகள் மற்றும் பொருளை இங்கே சேர்க்கவும்.",
+                en:"Add the English translation of the devotional lyrics here.",
+                te:"పాట అనువాదాన్ని ఇక్కడ చేర్చండి.",
+                ml:"ഗാനത്തിന്റെ വിവർത്തനം ഇവിടെ ചേർക്കുക.",
+                kn:"ಹಾಡಿನ ಅನುವಾದವನ್ನು ಇಲ್ಲಿ ಸೇರಿಸಿ.",
+                hi:"गीत का अनुवाद यहां जोड़ें।",
+                fr:"Ajoutez ici la traduction des paroles.",
+                ja:"歌詞の翻訳をここに追加してください。",
+                ms:"Tambah terjemahan lirik di sini.",
+                de:"Fügen Sie hier die Liedübersetzung hinzu."
+            }
+        }
+    ]
+};
 
 
 /* =========================================================
-   AUDIO
-========================================================= */
+   STATE
+   ========================================================= */
 
-const narrationAudio = new Audio();
+let selectedLanguage = "en";
+let currentLocationNumber = null;
+let currentNarration = null;
+let currentMusic = null;
 
-const titleAudio = new Audio();
+let ccEnabled = true;
+let narrationMuted = false;
 
-const musicAudio = new Audio();
-
-[narrationAudio, titleAudio, musicAudio]
-.forEach(audio => {
-
-    audio.preload = "auto";
-
-});
+let headphoneDetected = false;
+let audioPending = false;
+let appUnlockedForExit = false;
 
 
 /* =========================================================
-   HELPERS
-========================================================= */
+   ELEMENTS
+   ========================================================= */
 
-function langText(object) {
+const $ = id => document.getElementById(id);
 
-    if (!object) return "";
 
-    return (
-        object[STATE.language] ||
-        object.en ||
-        object.ta ||
-        ""
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+window.addEventListener("load", initializeApp);
+
+function initializeApp(){
+
+    $("startTempleName").textContent = APP.temple.en;
+    $("startTempleAddress").textContent = APP.address.en;
+
+    $("startVideo").src = APP.files.startVideo;
+
+    $("languageVideo").src = APP.files.languageVideo;
+
+    $("homeScreen").style.setProperty(
+        "--home-bg",
+        `url("${APP.files.homeBackground}")`
     );
 
-}
+    [
+        "footerLogo",
+        "footerLogo2",
+        "footerLogo3"
+    ].forEach(id=>{
+        $(id).src = APP.files.srmLogo;
+    });
 
-function langAudio(object) {
+    renderLanguages();
 
-    if (!object) return "";
+    setTimeout(()=>{
+        $("loader").classList.add("hide");
+        showScreen("startScreen");
 
-    return (
-        object[STATE.language] ||
-        object.en ||
-        object.ta ||
-        ""
-    );
+        $("startVideo").play().catch(()=>{});
+    },1000);
 
-}
-
-function t(key) {
-
-    return langText(UI[key]);
-
-}
-
-function stopAudio(audio) {
-
-    audio.pause();
-
-    try {
-        audio.currentTime = 0;
-    } catch(error) {}
-
-}
-
-function stopAllAudio() {
-
-    stopAudio(narrationAudio);
-
-    stopAudio(titleAudio);
-
-    stopAudio(musicAudio);
-
-}
-
-function showScreen(id) {
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(screen => {
-
-            screen.classList.remove("active");
-
-        });
-
-    const screen =
-        document.getElementById(id);
-
-    if (screen) {
-
-        screen.classList.add("active");
-
-    }
-
+    setupDeviceMonitoring();
 }
 
 
 /* =========================================================
-   FULLSCREEN CONTROL
-========================================================= */
+   SCREEN NAVIGATION
+   ========================================================= */
 
-async function requestAppFullscreen() {
+function showScreen(id){
 
-    try {
+    document.querySelectorAll(".screen").forEach(screen=>{
+        screen.classList.remove("active");
+    });
 
-        if (
-            !document.fullscreenElement &&
-            document.documentElement.requestFullscreen
-        ) {
+    $(id).classList.add("active");
+}
 
-            await document
-                .documentElement
-                .requestFullscreen({
-                    navigationUI: "hide"
-                });
 
-        }
+function showLanguages(){
 
-    } catch(error) {
+    stopAllAudio();
 
-        /* Browser may refuse fullscreen.
-           Application continues normally. */
+    $("startVideo").pause();
 
-    }
+    showScreen("languageScreen");
+}
 
+
+function selectLanguage(language){
+
+    selectedLanguage = language;
+
+    $("languageVideo").currentTime = 0;
+
+    showScreen("languageVideoScreen");
+
+    $("languageVideo").play().catch(()=>{
+        videoFinished();
+    });
+
+    $("languageVideo").onended = videoFinished;
+}
+
+
+function videoFinished(){
+
+    $("languageVideo").pause();
+
+    prepareLanguage();
+
+    showHome();
+}
+
+
+function prepareLanguage(){
+
+    const lang = selectedLanguage;
+
+    $("homeTitle").textContent = APP.temple[lang] || APP.temple.en;
+
+    $("homeDescription").textContent =
+        APP.address[lang] || APP.address.en;
+
+    $("locationNumber").placeholder =
+        APP.ui.enterNumber[lang] || APP.ui.enterNumber.en;
+
+    $("menuTitle").textContent =
+        APP.ui.menu[lang] || APP.ui.menu.en;
+
+    $("musicTitle").textContent =
+        APP.ui.music[lang] || APP.ui.music.en;
+
+    $("festivalTitle").textContent =
+        APP.ui.festivals[lang] || APP.ui.festivals.en;
+
+    $("exitTitle").textContent =
+        APP.ui.exit[lang] || APP.ui.exit.en;
 }
 
 
 /* =========================================================
-   START APPLICATION
-========================================================= */
+   LANGUAGE BUTTONS
+   ========================================================= */
 
-async function startApplication() {
+function renderLanguages(){
 
-    STATE.applicationStarted = true;
-
-    /*
-       This must happen from a user click.
-       Browsers do not allow automatic fullscreen
-       without user interaction.
-    */
-
-    await requestAppFullscreen();
-
-    showScreen(
-        "languageScreen"
-    );
-
-}
-
-
-/* =========================================================
-   LANGUAGE
-========================================================= */
-
-function renderLanguages() {
-
-    const grid =
-        document.getElementById(
-            "languageGrid"
-        );
+    const grid = $("languageGrid");
 
     grid.innerHTML = "";
 
-    LANGUAGES.forEach(language => {
+    APP.languages.forEach(language=>{
 
-        const button =
-            document.createElement("button");
+        const button = document.createElement("button");
 
-        button.className =
-            "language-button";
+        button.className = "language-btn";
 
-        button.innerHTML = `
-            <span class="language-native">
-                ${language.native}
-            </span>
+        button.textContent = language.name;
 
-            <span class="language-english">
-                ${language.name}
-            </span>
-        `;
-
-        button.onclick =
-            () => selectLanguage(
-                language.code
-            );
+        button.onclick = ()=>selectLanguage(language.code);
 
         grid.appendChild(button);
-
     });
-
 }
 
-function selectLanguage(code) {
 
-    STATE.language = code;
+/* =========================================================
+   HOME
+   ========================================================= */
 
-    updateLanguageUI();
+function showHome(){
 
-    /*
-       IMPORTANT:
-       VIDEO STARTS AFTER LANGUAGE SELECTION.
-       NEXT SCREEN DOES NOT OPEN UNTIL VIDEO ENDS.
-    */
+    stopNarration();
 
-    playLanguageIntro();
+    $("locationNumber").value = "";
 
+    showScreen("homeScreen");
 }
 
-function changeLanguage() {
+
+function goHome(){
 
     closeMenu();
 
-    stopAllAudio();
-
-    clearCaption();
-
-    showScreen(
-        "languageScreen"
-    );
-
+    showHome();
 }
 
 
-/* =========================================================
-   LANGUAGE-SPECIFIC INTRO VIDEO
-========================================================= */
+function numberKey(event){
 
-function playLanguageIntro() {
-
-    showScreen(
-        "introScreen"
-    );
-
-    const video =
-        document.getElementById(
-            "introVideo"
-        );
-
-    const source =
-        CONFIG.introVideos[
-            STATE.language
-        ] ||
-        CONFIG.introVideo;
-
-    video.pause();
-
-    video.currentTime = 0;
-
-    video.src = source;
-
-    video.muted =
-        STATE.muted;
-
-    /*
-       THE VIDEO MUST COMPLETE
-       BEFORE NEXT SCREEN.
-    */
-
-    video.onended = () => {
-
-        goToNumberScreen();
-
-    };
-
-    video.onerror = () => {
-
-        /*
-           If selected file is unavailable,
-           continue to next screen.
-        */
-
-        goToNumberScreen();
-
-    };
-
-    video.load();
-
-    video.play()
-        .catch(() => {
-
-            showToast(
-                "Video playback could not start"
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   WELCOME VIDEO
-========================================================= */
-
-function loadWelcomeVideo() {
-
-    const video =
-        document.getElementById(
-            "welcomeVideo"
-        );
-
-    video.src =
-        CONFIG.welcomeVideo;
-
-    video.load();
-
-    video.play()
-        .catch(() => {});
-
-}
-
-
-/* =========================================================
-   LANGUAGE-DEPENDENT UI
-========================================================= */
-
-function updateLanguageUI() {
-
-    document
-        .getElementById(
-            "startButton"
-        )
-        .textContent =
-        t("start");
-
-    document
-        .getElementById(
-            "languageHeading"
-        )
-        .textContent =
-        t("selectLanguage");
-
-    document
-        .getElementById(
-            "languageDescription"
-        )
-        .textContent =
-        t("chooseLanguage");
-
-    document
-        .getElementById(
-            "numberHeading"
-        )
-        .textContent =
-        t("explore");
-
-    document
-        .getElementById(
-            "numberText"
-        )
-        .textContent =
-        t("numberText");
-
-    document
-        .getElementById(
-            "menuTitle"
-        )
-        .textContent =
-        t("menu");
-
-    document
-        .getElementById(
-            "exploreMenu"
-        )
-        .textContent =
-        t("exploreTemple");
-
-    document
-        .getElementById(
-            "musicMenu"
-        )
-        .textContent =
-        t("musicGallery");
-
-    document
-        .getElementById(
-            "festivalMenu"
-        )
-        .textContent =
-        t("festivals");
-
-    document
-        .getElementById(
-            "sevaMenu"
-        )
-        .textContent =
-        t("sevas");
-
-    document
-        .getElementById(
-            "languageMenu"
-        )
-        .textContent =
-        t("changeLanguage");
-
-    document
-        .getElementById(
-            "exitMenu"
-        )
-        .textContent =
-        t("exit");
-
-    document
-        .getElementById(
-            "festivalHeading"
-        )
-        .textContent =
-        t("festivals");
-
-    document
-        .getElementById(
-            "sevaHeading"
-        )
-        .textContent =
-        t("sevas");
-
-    document
-        .getElementById(
-            "musicHeading"
-        )
-        .textContent =
-        t("music");
-
-    document
-        .getElementById(
-            "musicPlayButton"
-        )
-        .textContent =
-        t("playPause");
-
-    document
-        .getElementById(
-            "musicStopButton"
-        )
-        .textContent =
-        t("stop");
-
-    document
-        .getElementById(
-            "exitHeading"
-        )
-        .textContent =
-        t("exit");
-
-    document
-        .getElementById(
-            "exitText"
-        )
-        .textContent =
-        t("enterPassword");
-
-    document
-        .getElementById(
-            "cancelExitButton"
-        )
-        .textContent =
-        t("cancel");
-
-    document
-        .getElementById(
-            "confirmExitButton"
-        )
-        .textContent =
-        t("confirm");
-
-    document
-        .getElementById(
-            "exitMessage"
-        )
-        .textContent =
-        t("applicationClosed");
-
-    document
-        .getElementById(
-            "exitThankYou"
-        )
-        .textContent =
-        t("thankYou");
-
-    document
-        .getElementById(
-            "homeButton"
-        )
-        .textContent =
-        t("home");
-
-    updateControlButtons();
-
-    renderKeypad();
-
-}
-
-
-/* =========================================================
-   ICON BUTTONS
-========================================================= */
-
-function updateIcons() {
-
-    const soundIcon =
-        STATE.muted
-            ? ICONS.mute
-            : ICONS.sound;
-
-    document
-        .getElementById(
-            "introSoundButton"
-        )
-        .innerHTML =
-        soundIcon;
-
-    document
-        .getElementById(
-            "titleSoundButton"
-        )
-        .innerHTML =
-        soundIcon;
-
-    document
-        .getElementById(
-            "titleCloseButton"
-        )
-        .innerHTML =
-        ICONS.close;
-
-    document
-        .getElementById(
-            "contentCloseButton"
-        )
-        .innerHTML =
-        ICONS.close;
-
-    document
-        .getElementById(
-            "menuButton"
-        )
-        .innerHTML =
-        ICONS.menu;
-
-    document
-        .getElementById(
-            "numberMenuButton"
-        )
-        .innerHTML =
-        ICONS.menu;
-
-    document
-        .getElementById(
-            "menuCloseButton"
-        )
-        .innerHTML =
-        ICONS.close;
-
-    document
-        .getElementById(
-            "festivalBackButton"
-        )
-        .innerHTML =
-        ICONS.back;
-
-    document
-        .getElementById(
-            "sevaBackButton"
-        )
-        .innerHTML =
-        ICONS.back;
-
-    document
-        .getElementById(
-            "musicCloseButton"
-        )
-        .innerHTML =
-        ICONS.close;
-
-}
-
-
-/* =========================================================
-   SOUND
-========================================================= */
-
-function toggleMute() {
-
-    STATE.muted =
-        !STATE.muted;
-
-    [
-        narrationAudio,
-        titleAudio,
-        musicAudio
-    ]
-    .forEach(audio => {
-
-        audio.muted =
-            STATE.muted;
-
-    });
-
-    const video =
-        document.getElementById(
-            "introVideo"
-        );
-
-    video.muted =
-        STATE.muted;
-
-    updateIcons();
-
-    updateControlButtons();
-
-}
-
-function updateControlButtons() {
-
-    const sound =
-        document.getElementById(
-            "soundButton"
-        );
-
-    sound.textContent =
-        STATE.muted
-            ? "MUTED"
-            : "SOUND";
-
-    sound.classList.toggle(
-        "active",
-        !STATE.muted
-    );
-
-    const cc =
-        document.getElementById(
-            "ccButton"
-        );
-
-    cc.textContent =
-        STATE.ccEnabled
-            ? "CC ON"
-            : "CC OFF";
-
-    cc.classList.toggle(
-        "active",
-        STATE.ccEnabled
-    );
-
-}
-
-
-/* =========================================================
-   NUMBER SCREEN
-========================================================= */
-
-function goToNumberScreen() {
-
-    stopAllAudio();
-
-    clearCaption();
-
-    const video =
-        document.getElementById(
-            "introVideo"
-        );
-
-    video.pause();
-
-    video.currentTime = 0;
-
-    document
-        .getElementById(
-            "locationInput"
-        )
-        .value = "";
-
-    showScreen(
-        "numberScreen"
-    );
-
-}
-
-
-/* =========================================================
-   KEYPAD
-========================================================= */
-
-function renderKeypad() {
-
-    const keypad =
-        document.getElementById(
-            "keypad"
-        );
-
-    keypad.innerHTML = "";
-
-    const values = [
-
-        "1", "2", "3",
-        "4", "5", "6",
-        "7", "8", "9",
-
-        "CLEAR",
-        "0",
-        "BACK",
-
-        "ENTER"
-
-    ];
-
-    values.forEach(value => {
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-        button.className =
-            "key";
-
-        if (
-            value === "ENTER"
-        ) {
-
-            button.classList.add(
-                "enter"
-            );
-
-            button.textContent =
-                t("enter");
-
-        } else if (
-            value === "CLEAR"
-        ) {
-
-            button.textContent =
-                t("clear");
-
-        } else if (
-            value === "BACK"
-        ) {
-
-            button.textContent =
-                t("back");
-
-        } else {
-
-            button.textContent =
-                value;
-
-        }
-
-        button.onclick =
-            () => handleKey(value);
-
-        keypad.appendChild(
-            button
-        );
-
-    });
-
-}
-
-function handleKey(value) {
-
-    const input =
-        document.getElementById(
-            "locationInput"
-        );
-
-    if (
-        /^[0-9]$/.test(value)
-    ) {
-
-        input.value += value;
-
-        return;
-
+    if(event.key === "Enter"){
+        openLocationByNumber();
     }
-
-    if (
-        value === "CLEAR"
-    ) {
-
-        input.value = "";
-
-        return;
-
-    }
-
-    if (
-        value === "BACK"
-    ) {
-
-        input.value =
-            input.value.slice(
-                0,
-                -1
-            );
-
-        return;
-
-    }
-
-    if (
-        value === "ENTER"
-    ) {
-
-        findLocation();
-
-    }
-
 }
 
-function findLocation() {
 
-    const number =
-        document
-            .getElementById(
-                "locationInput"
-            )
-            .value
-            .trim();
+function openLocationByNumber(){
 
-    const location =
-        LOCATIONS.find(item =>
-            item.number === number
-        );
+    const number = $("locationNumber").value.trim();
 
-    if (!location) {
+    if(!number) return;
 
-        showToast(
-            "Location not found"
+    if(!APP.locations[number]){
+
+        showError(
+            selectedLanguage === "ta"
+            ? "இந்த எண்ணுக்கான தகவல் கிடைக்கவில்லை."
+            : "No information is available for this number."
         );
 
         return;
-
     }
 
-    openContent(
-        location,
-        "numberScreen"
-    );
+    currentLocationNumber = number;
 
+    openTempleContent(APP.locations[number]);
 }
 
 
 /* =========================================================
    CONTENT
-========================================================= */
+   ========================================================= */
 
-function openContent(
-    content,
-    previousScreen
-) {
+function openTempleContent(content){
 
-    STATE.currentContent =
-        content;
+    stopNarration();
 
-    STATE.previousScreen =
-        previousScreen;
+    $("contentImage").src =
+        content.image || APP.files.titleBackground;
 
-    stopAllAudio();
+    $("contentTitle").textContent =
+        content.title[selectedLanguage] ||
+        content.title.en;
 
-    clearCaption();
+    const text =
+        content.text[selectedLanguage] ||
+        content.text.en;
 
-    showTitle(content);
+    $("contentText").textContent = "";
 
-}
+    if(ccEnabled){
 
-function showTitle(content) {
+        $("contentText").classList.remove("hidden");
 
-    showScreen(
-        "titleScreen"
-    );
-
-    document
-        .getElementById(
-            "titleText"
-        )
-        .textContent =
-        langText(
-            content.title
+        typeText(
+            $("contentText"),
+            text
         );
 
-    document
-        .getElementById(
-            "titleBackground"
-        )
-        .src =
-        CONFIG.titleBackground;
+    }else{
 
-    const audio =
-        langAudio(
-            content.audio
-        );
-
-    if (!audio) {
-
-        setTimeout(
-            () =>
-                showContent(content),
-            1500
-        );
-
-        return;
-
+        $("contentText").classList.add("hidden");
     }
 
-    titleAudio.src =
-        audio;
+    showScreen("contentScreen");
 
-    titleAudio.muted =
-        STATE.muted;
+    if(!narrationMuted){
 
-    titleAudio.onended =
-        () =>
-            showContent(content);
+        setTimeout(()=>{
+            playNarration(content.audio);
+        },250);
+    }
+}
 
-    titleAudio.onerror =
-        () =>
-            showContent(content);
 
-    titleAudio.play()
-        .catch(() => {
+function typeText(element,text){
 
-            setTimeout(
-                () =>
-                    showContent(content),
-                1500
+    let index = 0;
+
+    const speed = 13;
+
+    const timer = setInterval(()=>{
+
+        if(index >= text.length){
+
+            clearInterval(timer);
+            return;
+        }
+
+        element.textContent += text.charAt(index);
+
+        index++;
+
+    },speed);
+}
+
+
+function closeContent(){
+
+    stopNarration();
+
+    showHome();
+}
+
+
+/* =========================================================
+   CC
+   ========================================================= */
+
+function toggleCC(){
+
+    ccEnabled = !ccEnabled;
+
+    $("ccButton").style.opacity =
+        ccEnabled ? "1" : ".45";
+
+    $("ccButton2").style.opacity =
+        ccEnabled ? "1" : ".45";
+
+    if(
+        $("contentScreen").classList.contains("active") &&
+        currentLocationNumber
+    ){
+
+        const content =
+            APP.locations[currentLocationNumber];
+
+        if(ccEnabled){
+
+            $("contentText").classList.remove("hidden");
+
+            $("contentText").textContent = "";
+
+            typeText(
+                $("contentText"),
+                content.text[selectedLanguage] ||
+                content.text.en
             );
 
+        }else{
+
+            $("contentText").classList.add("hidden");
+        }
+    }
+}
+
+
+/* =========================================================
+   MUTE
+   ========================================================= */
+
+function toggleNarrationMute(){
+
+    narrationMuted = !narrationMuted;
+
+    const icon =
+        narrationMuted ? "🔇" : "🔊";
+
+    $("muteButton").textContent = icon;
+    $("muteButton2").textContent = icon;
+
+    if(narrationMuted){
+
+        stopNarration();
+
+    }else if(
+        currentLocationNumber &&
+        $("contentScreen").classList.contains("active")
+    ){
+
+        playNarration(
+            APP.locations[currentLocationNumber].audio
+        );
+    }
+}
+
+
+/* =========================================================
+   HEADPHONE DETECTION
+   ========================================================= */
+
+async function checkHeadphones(){
+
+    try{
+
+        if(
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.enumerateDevices
+        ){
+
+            headphoneDetected = false;
+
+            return false;
+        }
+
+        const devices =
+            await navigator.mediaDevices.enumerateDevices();
+
+        const outputs =
+            devices.filter(device=>
+                device.kind === "audiooutput"
+            );
+
+        if(outputs.length === 0){
+
+            headphoneDetected = false;
+
+            return false;
+        }
+
+        /*
+          Browsers often hide device labels.
+          This checks known external audio output labels.
+        */
+
+        const keywords = [
+            "headphone",
+            "headset",
+            "earphone",
+            "earbuds",
+            "bluetooth",
+            "airpods",
+            "buds",
+            "wireless"
+        ];
+
+        headphoneDetected =
+            outputs.some(device=>{
+
+                const label =
+                    (device.label || "")
+                    .toLowerCase();
+
+                return keywords.some(keyword=>
+                    label.includes(keyword)
+                );
+            });
+
+        return headphoneDetected;
+
+    }catch(error){
+
+        headphoneDetected = false;
+
+        return false;
+    }
+}
+
+
+/*
+  Request permission after a user interaction.
+  Supported browsers may expose output device labels afterwards.
+*/
+
+async function requestDevicePermission(){
+
+    try{
+
+        if(!navigator.mediaDevices?.getUserMedia){
+            return;
+        }
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                audio:true
+            });
+
+        stream.getTracks().forEach(track=>{
+            track.stop();
         });
 
+        await checkHeadphones();
+
+    }catch(error){
+        headphoneDetected = false;
+    }
 }
 
-function showContent(content) {
 
-    stopAudio(
-        titleAudio
-    );
-
-    showScreen(
-        "contentScreen"
-    );
-
-    document
-        .getElementById(
-            "contentTitle"
-        )
-        .textContent =
-        langText(
-            content.title
-        );
-
-    const background =
-        document.getElementById(
-            "contentBackground"
-        );
-
-    background.style.backgroundImage =
-        `url("${content.image}")`;
-
-    if (
-        content.music &&
-        content.music.length
-    ) {
-
-        document
-            .getElementById(
-                "musicButton"
-            )
-            .classList.remove(
-                "hidden"
-            );
-
-    } else {
-
-        document
-            .getElementById(
-                "musicButton"
-            )
-            .classList.add(
-                "hidden"
-            );
-
-    }
-
-    if (
-        STATE.ccEnabled
-    ) {
-
-        startCaption(
-            langText(
-                content.description
-            ),
-            content
-        );
-
-    } else {
-
-        document
-            .getElementById(
-                "contentDescription"
-            )
-            .classList.add(
-                "no-caption"
-            );
-
-        playNarration(content);
-
-    }
-
-}
+document.addEventListener(
+    "click",
+    requestDevicePermission,
+    {once:true}
+);
 
 
 /* =========================================================
    NARRATION
-========================================================= */
+   ========================================================= */
 
-function playNarration(content) {
+async function playNarration(audioSources){
 
-    stopAudio(
-        narrationAudio
-    );
+    stopNarration();
+
+    if(narrationMuted) return;
+
+    const connected =
+        await checkHeadphones();
+
+    if(!connected){
+
+        audioPending = true;
+
+        showHeadphoneBlock();
+
+        return;
+    }
+
+    audioPending = false;
+
+    hideHeadphoneBlock();
 
     const source =
-        langAudio(
-            content.audio
-        );
+        audioSources[selectedLanguage] ||
+        audioSources.en;
 
-    if (!source) {
+    currentNarration = new Audio(source);
 
-        return;
+    currentNarration.preload = "auto";
 
+    currentNarration.onended = ()=>{
+
+        /*
+          Audio completed.
+          Next content can be triggered here if required.
+        */
+
+        currentNarration = null;
+    };
+
+    try{
+
+        await currentNarration.play();
+
+    }catch(error){
+
+        audioPending = true;
+
+        showHeadphoneBlock();
     }
+}
 
-    narrationAudio.src =
-        source;
 
-    narrationAudio.muted =
-        STATE.muted;
+function stopNarration(){
 
-    narrationAudio.play()
-        .catch(() => {});
+    if(currentNarration){
 
+        currentNarration.pause();
+
+        currentNarration.currentTime = 0;
+
+        currentNarration = null;
+    }
 }
 
 
 /* =========================================================
-   CC TYPING
-========================================================= */
+   HEADPHONE SCREEN
+   ========================================================= */
 
-function toggleCC() {
+function showHeadphoneBlock(){
 
-    STATE.ccEnabled =
-        !STATE.ccEnabled;
+    $("headphoneRequired").classList.add("show");
 
-    updateControlButtons();
+    stopNarration();
 
-    if (
-        !STATE.currentContent
-    ) {
+    stopMusic();
+}
 
-        return;
 
-    }
+function hideHeadphoneBlock(){
 
-    if (
-        !document
-            .getElementById(
-                "contentScreen"
-            )
-            .classList
-            .contains("active")
-    ) {
+    $("headphoneRequired").classList.remove("show");
+}
 
-        return;
 
-    }
+async function checkAndResumeAudio(){
 
-    if (
-        STATE.ccEnabled
-    ) {
+    const connected =
+        await checkHeadphones();
 
-        startCaption(
-            langText(
-                STATE.currentContent
-                    .description
-            ),
-            STATE.currentContent
+    if(!connected){
+
+        showError(
+            "Headphones or a supported headset output could not be detected."
         );
 
-    } else {
+        return;
+    }
 
-        clearCaption();
+    hideHeadphoneBlock();
 
-        document
-            .getElementById(
-                "contentDescription"
-            )
-            .classList.add(
-                "no-caption"
-            );
+    if(
+        audioPending &&
+        currentLocationNumber &&
+        !narrationMuted
+    ){
+
+        audioPending = false;
 
         playNarration(
-            STATE.currentContent
+            APP.locations[currentLocationNumber].audio
         );
-
     }
-
-}
-
-function clearCaption() {
-
-    if (
-        STATE.captionTimer
-    ) {
-
-        clearInterval(
-            STATE.captionTimer
-        );
-
-    }
-
-    STATE.captionTimer =
-        null;
-
-}
-
-function startCaption(
-    text,
-    content
-) {
-
-    clearCaption();
-
-    stopAudio(
-        narrationAudio
-    );
-
-    const output =
-        document.getElementById(
-            "contentDescription"
-        );
-
-    output.classList.remove(
-        "no-caption"
-    );
-
-    output.textContent = "";
-
-    const characters =
-        Array.from(
-            text || ""
-        );
-
-    let index = 0;
-
-    STATE.captionTimer =
-        setInterval(() => {
-
-            if (
-                index >=
-                characters.length
-            ) {
-
-                clearCaption();
-
-                return;
-
-            }
-
-            output.textContent +=
-                characters[index];
-
-            index++;
-
-        }, 18);
-
-    playNarration(content);
-
 }
 
 
 /* =========================================================
-   CLOSE CONTENT
-========================================================= */
+   DEVICE CHANGE
+   ========================================================= */
 
-function closeContent() {
+function setupDeviceMonitoring(){
 
-    stopAllAudio();
+    if(
+        navigator.mediaDevices &&
+        navigator.mediaDevices.addEventListener
+    ){
 
-    clearCaption();
+        navigator.mediaDevices.addEventListener(
+            "devicechange",
+            async ()=>{
 
-    if (
-        STATE.previousScreen ===
-        "festivalScreen"
-    ) {
+                const connected =
+                    await checkHeadphones();
 
-        showScreen(
-            "festivalScreen"
+                if(!connected){
+
+                    stopNarration();
+                    stopMusic();
+
+                    if(
+                        $("contentScreen")
+                        .classList
+                        .contains("active")
+                    ){
+
+                        showHeadphoneBlock();
+                    }
+                }
+            }
         );
-
-        return;
-
     }
 
-    if (
-        STATE.previousScreen ===
-        "sevaScreen"
-    ) {
 
-        showScreen(
-            "sevaScreen"
-        );
+    document.addEventListener(
+        "visibilitychange",
+        async ()=>{
 
-        return;
+            if(document.visibilityState === "visible"){
 
-    }
+                const connected =
+                    await checkHeadphones();
 
-    goToNumberScreen();
+                if(!connected){
 
+                    stopNarration();
+                    stopMusic();
+                }
+            }
+        }
+    );
 }
 
 
 /* =========================================================
    MENU
-========================================================= */
+   ========================================================= */
 
-function openMenu() {
+function openMenu(){
 
-    document
-        .getElementById(
-            "menuOverlay"
-        )
-        .classList.add(
-            "open"
-        );
-
-}
-
-function closeMenu() {
-
-    document
-        .getElementById(
-            "menuOverlay"
-        )
-        .classList.remove(
-            "open"
-        );
-
+    $("menuOverlay").classList.add("open");
 }
 
 
-/* =========================================================
-   FESTIVALS
-========================================================= */
+function closeMenu(){
 
-function showFestivalList() {
-
-    closeMenu();
-
-    renderList(
-        FESTIVALS,
-        "festivalList",
-        "festivalScreen"
-    );
-
-    showScreen(
-        "festivalScreen"
-    );
-
-}
-
-
-/* =========================================================
-   SEVAS
-========================================================= */
-
-function showSevaList() {
-
-    closeMenu();
-
-    renderList(
-        SEVAS,
-        "sevaList",
-        "sevaScreen"
-    );
-
-    showScreen(
-        "sevaScreen"
-    );
-
-}
-
-
-/* =========================================================
-   LIST RENDERER
-========================================================= */
-
-function renderList(
-    items,
-    containerId,
-    source
-) {
-
-    const container =
-        document.getElementById(
-            containerId
-        );
-
-    container.innerHTML = "";
-
-    items.forEach(item => {
-
-        const card =
-            document.createElement(
-                "div"
-            );
-
-        card.className =
-            "list-card";
-
-        card.innerHTML = `
-
-            <img
-                src="${item.image}"
-                alt=""
-            >
-
-            <div
-                class="list-card-title"
-            >
-                ${langText(item.title)}
-            </div>
-
-            <div
-                class="list-arrow"
-            >
-                ›
-            </div>
-
-        `;
-
-        card.onclick =
-            () =>
-                openContent(
-                    item,
-                    source
-                );
-
-        container.appendChild(
-            card
-        );
-
-    });
-
-}
-
-function returnFromList() {
-
-    goToNumberScreen();
-
+    $("menuOverlay").classList.remove("open");
 }
 
 
 /* =========================================================
    MUSIC
-========================================================= */
+   ========================================================= */
 
-function openMusicGallery() {
+function openMusicGallery(){
 
     closeMenu();
 
-    openMusic(
-        MUSIC
-    );
+    renderMusicList();
 
+    $("musicModal").classList.add("open");
 }
 
-function openRecommendedMusic() {
 
-    const ids =
-        STATE.currentContent
-            ?.music || [];
-
-    const filtered =
-        MUSIC.filter(item =>
-            ids.includes(
-                item.id
-            )
-        );
-
-    openMusic(
-        filtered
-    );
-
-}
-
-function openMusic(songs) {
-
-    const modal =
-        document.getElementById(
-            "musicModal"
-        );
-
-    modal.classList.add(
-        "open"
-    );
-
-    renderMusic(songs);
-
-}
-
-function renderMusic(songs) {
-
-    const list =
-        document.getElementById(
-            "musicList"
-        );
-
-    list.innerHTML = "";
-
-    songs.forEach(song => {
-
-        const item =
-            document.createElement(
-                "div"
-            );
-
-        item.className =
-            "music-item";
-
-        item.textContent =
-            langText(
-                song.title
-            );
-
-        item.onclick =
-            () =>
-                playMusic(song);
-
-        list.appendChild(
-            item
-        );
-
-    });
-
-}
-
-function playMusic(song) {
-
-    STATE.currentMusic =
-        song;
-
-    stopAudio(
-        musicAudio
-    );
-
-    musicAudio.src =
-        song.audio;
-
-    musicAudio.muted =
-        STATE.muted;
-
-    musicAudio.play()
-        .catch(() => {});
-
-    document
-        .getElementById(
-            "lyrics"
-        )
-        .textContent =
-        langText(
-            song.lyrics
-        );
-
-}
-
-function toggleMusic() {
-
-    if (
-        !musicAudio.src
-    ) return;
-
-    if (
-        musicAudio.paused
-    ) {
-
-        musicAudio.play()
-            .catch(() => {});
-
-    } else {
-
-        musicAudio.pause();
-
-    }
-
-}
-
-function stopMusic() {
-
-    stopAudio(
-        musicAudio
-    );
-
-}
-
-function closeMusic() {
+function closeMusicGallery(){
 
     stopMusic();
 
-    document
-        .getElementById(
-            "musicModal"
-        )
-        .classList.remove(
-            "open"
-        );
+    $("musicModal").classList.remove("open");
+}
 
+
+function renderMusicList(){
+
+    const list = $("musicList");
+
+    list.innerHTML = "";
+
+    APP.music.forEach((music,index)=>{
+
+        const button =
+            document.createElement("button");
+
+        button.className = "music-item";
+
+        button.textContent =
+            music.title[selectedLanguage] ||
+            music.title.en;
+
+        button.onclick =
+            ()=>playMusic(index);
+
+        list.appendChild(button);
+    });
+}
+
+
+async function playMusic(index){
+
+    stopMusic();
+
+    const item = APP.music[index];
+
+    const connected =
+        await checkHeadphones();
+
+    if(!connected){
+
+        showHeadphoneBlock();
+
+        return;
+    }
+
+    const source =
+        item.audio[selectedLanguage] ||
+        item.audio.en;
+
+    currentMusic = new Audio(source);
+
+    currentMusic.onended = ()=>{
+
+        currentMusic = null;
+    };
+
+    $("musicLyrics").textContent =
+        item.lyrics[selectedLanguage] ||
+        item.lyrics.en;
+
+    try{
+
+        await currentMusic.play();
+
+    }catch(error){
+
+        showHeadphoneBlock();
+    }
+}
+
+
+function stopMusic(){
+
+    if(currentMusic){
+
+        currentMusic.pause();
+
+        currentMusic.currentTime = 0;
+
+        currentMusic = null;
+    }
+}
+
+
+/* =========================================================
+   FESTIVALS
+   ========================================================= */
+
+function openFestivalGallery(){
+
+    closeMenu();
+
+    renderFestivalList();
+
+    $("festivalModal").classList.add("open");
+}
+
+
+function closeFestivalGallery(){
+
+    $("festivalModal").classList.remove("open");
+}
+
+
+function renderFestivalList(){
+
+    const list = $("festivalList");
+
+    list.innerHTML = "";
+
+    APP.festivals.forEach((festival,index)=>{
+
+        const item =
+            document.createElement("div");
+
+        item.className = "festival-item";
+
+        item.innerHTML = `
+
+            <img src="${festival.image}" alt="">
+
+            <div class="festival-info">
+
+                <div class="festival-name">
+                    ${
+                        festival.title[selectedLanguage] ||
+                        festival.title.en
+                    }
+                </div>
+
+            </div>
+
+            <button class="arrow-btn">
+                ›
+            </button>
+        `;
+
+        item.querySelector(".arrow-btn").onclick =
+            ()=>openFestival(index);
+
+        list.appendChild(item);
+    });
+}
+
+
+function openFestival(index){
+
+    const festival =
+        APP.festivals[index];
+
+    closeFestivalGallery();
+
+    openTempleContent({
+        image:festival.image,
+        title:festival.title,
+        text:festival.text,
+        audio:festival.audio
+    });
 }
 
 
 /* =========================================================
    EXIT
-========================================================= */
+   ========================================================= */
 
-function openExitDialog() {
+function openExitPassword(){
 
     closeMenu();
 
-    document
-        .getElementById(
-            "exitDialog"
-        )
-        .classList.add(
-            "open"
-        );
+    $("exitPassword").value = "";
 
-    document
-        .getElementById(
-            "exitPassword"
-        )
-        .value = "";
+    $("exitModal").classList.add("open");
 
+    setTimeout(()=>{
+        $("exitPassword").focus();
+    },200);
 }
 
-function closeExitDialog() {
 
-    document
-        .getElementById(
-            "exitDialog"
-        )
-        .classList.remove(
-            "open"
-        );
+function closeExitPassword(){
 
+    $("exitModal").classList.remove("open");
 }
 
-function verifyExit() {
+
+function verifyExitPassword(){
 
     const password =
-        document
-            .getElementById(
-                "exitPassword"
-            )
-            .value;
+        $("exitPassword").value;
 
-    if (
-        password !==
-        CONFIG.exitPassword
-    ) {
+    if(password === "2404266"){
 
-        showToast(
-            "Incorrect Password"
+        appUnlockedForExit = true;
+
+        closeExitPassword();
+
+        stopAllAudio();
+
+        showScreen("startScreen");
+
+        $("startVideo").play().catch(()=>{});
+
+        showError(
+            "Application exit unlocked. You may now use the device navigation controls."
         );
 
-        return;
+    }else{
 
+        $("exitPassword").value = "";
+
+        showError("Incorrect password.");
     }
-
-    STATE.exitApproved =
-        true;
-
-    stopAllAudio();
-
-    clearCaption();
-
-    closeExitDialog();
-
-    /*
-       RELEASE FULLSCREEN ONLY
-       AFTER CORRECT PASSWORD
-    */
-
-    if (
-        document.fullscreenElement &&
-        document.exitFullscreen
-    ) {
-
-        document
-            .exitFullscreen()
-            .catch(() => {});
-
-    }
-
-    showScreen(
-        "exitScreen"
-    );
-
-}
-
-function goHome() {
-
-    STATE.exitApproved =
-        false;
-
-    showScreen(
-        "welcomeScreen"
-    );
-
 }
 
 
 /* =========================================================
-   BROWSER BACK CONTROL
-========================================================= */
+   FULL SCREEN ATTEMPT
+   ========================================================= */
+
+async function requestAppFullscreen(){
+
+    const element =
+        document.documentElement;
+
+    try{
+
+        if(element.requestFullscreen){
+
+            await element.requestFullscreen();
+
+        }else if(element.webkitRequestFullscreen){
+
+            element.webkitRequestFullscreen();
+
+        }
+
+    }catch(error){
+
+        /*
+          Fullscreen may be blocked by the browser.
+          A normal browser cannot permanently disable
+          Android Home or Back buttons.
+        */
+    }
+}
+
+
+document.addEventListener(
+    "click",
+    ()=>{
+        if(!appUnlockedForExit){
+            requestAppFullscreen();
+        }
+    },
+    {once:true}
+);
+
+
+/* =========================================================
+   BLOCK BACK NAVIGATION WHILE APPLICATION IS LOCKED
+   ========================================================= */
 
 history.pushState(
-    null,
+    {templeApp:true},
     "",
     location.href
 );
 
+
 window.addEventListener(
     "popstate",
-    function() {
+    ()=>{
 
-        /*
-           If application has not been
-           officially exited, prevent
-           normal back navigation.
-        */
-
-        if (
-            !STATE.exitApproved
-        ) {
+        if(!appUnlockedForExit){
 
             history.pushState(
-                null,
+                {templeApp:true},
                 "",
                 location.href
             );
 
-            return;
-
         }
-
     }
 );
 
 
 /* =========================================================
-   DISABLE COMMON GESTURES
-========================================================= */
+   STOP ALL AUDIO
+   ========================================================= */
+
+function stopAllAudio(){
+
+    stopNarration();
+
+    stopMusic();
+}
+
+
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
+
+let errorTimer = null;
+
+function showError(message){
+
+    const box = $("errorBox");
+
+    box.textContent = message;
+
+    box.style.display = "block";
+
+    clearTimeout(errorTimer);
+
+    errorTimer = setTimeout(()=>{
+
+        box.style.display = "none";
+
+    },3500);
+}
+
+
+/* =========================================================
+   PREVENT UNWANTED PAGE ACTIONS
+   ========================================================= */
 
 document.addEventListener(
     "contextmenu",
-    event => {
-
-        event.preventDefault();
-
-    }
+    event=>event.preventDefault()
 );
+
 
 document.addEventListener(
     "gesturestart",
-    event => {
-
-        event.preventDefault();
-
-    }
+    event=>event.preventDefault()
 );
+
 
 document.addEventListener(
     "touchmove",
-    event => {
+    event=>{
 
-        /*
-           Prevent browser page pull gestures.
-           Internal content elements still scroll
-           through their own overflow.
-        */
-
-        if (
-            !event.target.closest(
-                ".content-scroll, .list-screen, .language-wrap, .menu-panel, .music-box"
-            )
-        ) {
-
+        if(
+            document.body.scrollHeight <=
+            window.innerHeight
+        ){
             event.preventDefault();
-
         }
 
     },
-    {
-        passive: false
-    }
+    {passive:false}
 );
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-let toastTimer;
-
-function showToast(message) {
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-    toast.textContent =
-        message;
-
-    toast.classList.add(
-        "show"
-    );
-
-    clearTimeout(
-        toastTimer
-    );
-
-    toastTimer =
-        setTimeout(() => {
-
-            toast.classList.remove(
-                "show"
-            );
-
-        }, 2500);
-
-}
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-function initialize() {
-
-    document
-        .getElementById(
-            "welcomeTamil"
-        )
-        .textContent =
-        CONFIG.templeTamil;
-
-    document
-        .getElementById(
-            "welcomeEnglish"
-        )
-        .textContent =
-        CONFIG.templeEnglish;
-
-    document
-        .getElementById(
-            "templeCode"
-        )
-        .textContent =
-        CONFIG.templeCode;
-
-    document
-        .getElementById(
-            "welcomeLogo"
-        )
-        .src =
-        CONFIG.srmLogo;
-
-    document
-        .getElementById(
-            "numberLogo"
-        )
-        .src =
-        CONFIG.srmLogo;
-
-    updateIcons();
-
-    renderLanguages();
-
-    updateLanguageUI();
-
-    loadWelcomeVideo();
-
-    setTimeout(() => {
-
-        showScreen(
-            "welcomeScreen"
-        );
-
-    }, 1000);
-
-}
-
-initialize();
 
 </script>
 
