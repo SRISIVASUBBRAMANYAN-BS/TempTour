@@ -1437,12 +1437,6 @@ body {
         id="titleCloseButton"
     ></button>
 
-    <button
-        class="icon-button top-right"
-        onclick="toggleMute()"
-        id="titleSoundButton"
-    ></button>
-
     <div class="title-content">
         <h1 id="titleText"></h1>
     </div>
@@ -3138,12 +3132,6 @@ function updateIcons() {
         .innerHTML =
         soundIcon;
 
-    document
-        .getElementById(
-            "titleSoundButton"
-        )
-        .innerHTML =
-        soundIcon;
 
     document
         .getElementById(
@@ -3495,10 +3483,12 @@ function openContent(
 
 function showTitle(content) {
 
+    // Show title card
     showScreen(
         "titleScreen"
     );
 
+    // Show only the title and background image
     document
         .getElementById(
             "titleText"
@@ -3515,48 +3505,19 @@ function showTitle(content) {
         .src =
         CONFIG.titleBackground;
 
-    const audio =
-        langAudio(
-            content.audio
-        );
+    // IMPORTANT: No title audio is played.
+    // Stop any previous audio before showing the title card.
+    stopAudio(
+        titleAudio
+    );
 
-    if (!audio) {
-
-        setTimeout(
-            () =>
-                showContent(content),
-            1500
-        );
-
-        return;
-
-    }
-
-    titleAudio.src =
-        audio;
-
-    titleAudio.muted =
-        STATE.muted;
-
-    titleAudio.onended =
-        () =>
+    // Keep the title card visible for exactly 2 seconds.
+    setTimeout(
+        () => {
             showContent(content);
-
-    titleAudio.onerror =
-        () =>
-            showContent(content);
-
-    titleAudio.play()
-        .catch(() => {
-
-            setTimeout(
-                () =>
-                    showContent(content),
-                1500
-            );
-
-        });
-
+        },
+        2000
+    );
 }
 
 function showContent(content) {
